@@ -17,20 +17,32 @@ limitations under the License.
 
 using namespace std;
 
-int main(int argc, char *argv[]){
-    size_t words = (atoi(argv[1]) + 63) / 64;
-    hdc_word_t *x = (hdc_word_t*)aligned_alloc(64, words * sizeof(hdc_word_t));
-    hdc_word_t *y = (hdc_word_t*)aligned_alloc(64, words * sizeof(hdc_word_t));
-    hdc_word_t *z = (hdc_word_t*)aligned_alloc(64, words * sizeof(hdc_word_t));
+int main(){
+    size_t words = (256 + 63) / 64;
+    size_t alignment = 64;
+    size_t total_bytes = words * sizeof(hdc_word_t);
+    size_t alloc_size = ((total_bytes + (alignment - 1)) / alignment) * alignment;
+
+    hdc_word_t *x = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
+    hdc_word_t *y = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
+    hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
 
     size_t vl = get_rvv_vl();
 
-    x[0] = ((hdc_word_t)rand() << 8) | rand();
-    y[0] = ((hdc_word_t)rand() << 8) | rand(); 
+    x[0] = 1; y[0] = 0;
+    x[1] = 0; y[1] = 1;
+    x[2] = 0; y[2] = 0;
+    x[3] = 1; y[3] = 1; 
 
     hdc_bind(x,y,z,vl);
 
-    printf("Result: %lu\n", *z);
+    for (size_t i = 0; i < words; i++) {
+        printf("z[%zu]: %lu\n", i, z[i]);
+    }
+
+    free(x);
+    free(y);
+    free(z);
 
     return 0;
 }

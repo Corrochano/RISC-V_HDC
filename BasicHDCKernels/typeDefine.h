@@ -35,9 +35,6 @@ void hdc_bind(
 {   
     vuint64m1_t vx = __riscv_vle64_v_u64m1(x, vl);
     vuint64m1_t vy = __riscv_vle64_v_u64m1(y, vl);
-    
-    //vuint64m1_t vx = __riscv_vreinterpret_v_i64m1_u64m1(x);
-    //vuint64m1_t vy = __riscv_vreinterpret_v_i64m1_u64m1(y);
 
     vuint64m1_t vz = __riscv_vxor_vv_u64m1(vx,vy,vl);
 
