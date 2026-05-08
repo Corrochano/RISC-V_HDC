@@ -17,16 +17,20 @@ limitations under the License.
 
 using namespace std;
 
-int main(){
-    size_t words = (500 + 63) / 64;
-    hdc_word_t x = ((hdc_word_t)rand() << words) | rand();
-    hdc_word_t y = ((hdc_word_t)rand() << words) | rand();
-    hdc_word_t z;
-    size_t vl = get_rvv_vl;
+int main(int argc, char *argv[]){
+    size_t words = (atoi(argv[1]) + 63) / 64;
+    hdc_word_t *x = (hdc_word_t*)aligned_alloc(64, words * sizeof(hdc_word_t));
+    hdc_word_t *y = (hdc_word_t*)aligned_alloc(64, words * sizeof(hdc_word_t));
+    hdc_word_t *z = (hdc_word_t*)aligned_alloc(64, words * sizeof(hdc_word_t));
 
-    hdc_bind_scalar(&x,&y,&z,vl);
+    size_t vl = get_rvv_vl();
 
-    printf("Result: %llu\n", z);
+    x[0] = ((hdc_word_t)rand() << 8) | rand();
+    y[0] = ((hdc_word_t)rand() << 8) | rand(); 
+
+    hdc_bind(x,y,z,vl);
+
+    printf("Result: %lu\n", *z);
 
     return 0;
 }

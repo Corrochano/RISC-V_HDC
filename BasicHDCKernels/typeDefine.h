@@ -27,13 +27,19 @@ size_t get_rvv_vl() {
       return __riscv_vsetvlmax_e64m1();
 }                                   
 
-void hdc_bind_scalar(
+void hdc_bind(
     hdc_word_t *x,
     hdc_word_t *y,
     hdc_word_t *z,
     size_t vl)
-{
-    vuint64m1_t vz = __riscv_vxor_vv_u64m1(x,y,vl);
+{   
+    vuint64m1_t vx = __riscv_vle64_v_u64m1(x, vl);
+    vuint64m1_t vy = __riscv_vle64_v_u64m1(y, vl);
+    
+    //vuint64m1_t vx = __riscv_vreinterpret_v_i64m1_u64m1(x);
+    //vuint64m1_t vy = __riscv_vreinterpret_v_i64m1_u64m1(y);
+
+    vuint64m1_t vz = __riscv_vxor_vv_u64m1(vx,vy,vl);
 
     __riscv_vse64_v_u64m1(z, vz, vl);
 }
