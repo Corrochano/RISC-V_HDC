@@ -40,3 +40,17 @@ void hdc_bind(
 
     __riscv_vse64_v_u64m1(z, vz, vl);
 }
+
+hdc_score_t hdc_hamming(
+    const hdc_word_t *x,
+    const hdc_word_t *y,
+    size_t vl)
+{
+    hdc_score_t acc = 0;
+    vuint64m1_t vx = __riscv_vle64_v_u64m1(x, vl);
+    vuint64m1_t vy = __riscv_vle64_v_u64m1(y, vl);
+
+    acc = __riscv_viota_m_u64m1(__riscv_vxor_vv_u64m1(vx,vy,vl));
+
+    return acc;
+}
