@@ -54,7 +54,8 @@ void hdc_hamming(
 
     hdc_bind(x,y,z,vl); // Perform XOR
     vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
-    vbool64_t bz = __riscv_vreinterpret_v_u64m1_i64m1(vz); // Need bool argument 
+    
+    vbool64_t bz = __riscv_vmsne_vx_u64m1_b64(vz, 0, vl); // Need bool argument 
 
     vuint64m1_t vacc = __riscv_viota_m_u64m1(bz, vl); // pop count
 
