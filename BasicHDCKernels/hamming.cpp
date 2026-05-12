@@ -25,15 +25,17 @@ int main(){
 
     hdc_word_t *x = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
     hdc_word_t *y = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
+    hdc_score_t *acc; 
 
     size_t vl = get_rvv_vl();
 
-    hdc_score_t result = hdc_hamming(x,y,vl);
+    hdc_hamming(x,y,acc,vl);
 
-    printf("Score: %d\n", result);
+    printf("Score: %ln\n", acc);
 
     free(x);
     free(y);
+    free(acc);
 
     return 0;
 }
