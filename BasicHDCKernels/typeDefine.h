@@ -57,17 +57,13 @@ void hdc_hamming(
     hdc_bind(x,y,z,vl); // Perform XOR
     vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
 
-    printf("Bindeado y vector vz\n");
-
     vbool64_t bz = __riscv_vmsne_vx_u64m1_b64(vz, 0, vl); // Need bool argument
-    
-    printf("Converted to bool\n");
 
-    vuint64m1_t vacc = __riscv_viota_m_u64m1(bz, vl); // pop count
+    *acc = __riscv_vcpop_m_b64(bz, vl); // pop count
 
-    printf("Popcount performed\n");
+    printf("Popcount performed: %lu\n", acc);
 
-    __riscv_vse64_v_u64m1(acc, vacc, vl);
+    //__riscv_vse64_v_u64m1(acc, vacc, vl);
 
     free(z);
 
