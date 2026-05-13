@@ -21,7 +21,7 @@ limitations under the License.
 #include <riscv_vector.h>
 
 typedef uint64_t hdc_word_t;
-typedef uint64_t  hdc_score_t;
+typedef uint64_t hdc_score_t;
 
 size_t get_rvv_vl() {
       return __riscv_vsetvlmax_e64m1();
@@ -48,18 +48,28 @@ void hdc_hamming(
     const hdc_word_t *x,
     const hdc_word_t *y,
     hdc_score_t *acc,
-    size_t vl)
+    size_t vl,
+    size_t alignment, 
+    size_t alloc_size)
 {
-    hdc_word_t *z;
+    hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
 
     hdc_bind(x,y,z,vl); // Perform XOR
     vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
+
+    printf("Bindeado y vector vz\n");
+
+    vbool64_t bz = __riscv_vmsne_vx_u64m1_b64(vz, 0, vl); // Need bool argument
     
-    vbool64_t bz = __riscv_vmsne_vx_u64m1_b64(vz, 0, vl); // Need bool argument 
+    printf("Converted to bool\n");
 
     vuint64m1_t vacc = __riscv_viota_m_u64m1(bz, vl); // pop count
+
+    printf("Popcount performed\n");
 
     __riscv_vse64_v_u64m1(acc, vacc, vl);
 
     free(z);
+
+    printf("Free z\n");
 }
