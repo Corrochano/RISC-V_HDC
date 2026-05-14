@@ -23,8 +23,6 @@ int main(){
     size_t total_bytes = words * sizeof(hdc_word_t);
     size_t alloc_size = total_bytes + alignment;
 
-    printf("Sizes created\n");
-
     hdc_word_t *x = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
     hdc_word_t *y = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
     hdc_score_t *acc = (hdc_score_t*)aligned_alloc(alignment, alloc_size); 
@@ -34,11 +32,9 @@ int main(){
 
     size_t vl = get_rvv_vl();
 
-    printf("Hamming starts\n");
-
     hdc_hamming(x,y,acc,vl,alignment,alloc_size);
 
-    printf("Score: %ln\n", acc);
+    printf("Score: %lu\n", *acc);
 
     free(x);
     free(y);

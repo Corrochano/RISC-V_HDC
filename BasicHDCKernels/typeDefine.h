@@ -61,11 +61,5 @@ void hdc_hamming(
 
     *acc = __riscv_vcpop_m_b64(bz, vl); // pop count
 
-    printf("Popcount performed: %lu\n", acc);
-
-    //__riscv_vse64_v_u64m1(acc, vacc, vl);
-
     free(z);
-
-    printf("Free z\n");
 }
