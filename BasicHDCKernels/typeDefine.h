@@ -63,3 +63,15 @@ void hdc_hamming(
 
     free(z);
 }
+
+void hdc_query(
+    const hdc_word_t *M,
+    const hdc_word_t *q,
+    hdc_score_t *scores,
+    size_t nvec,
+    size_t words)
+{
+    for (size_t v = 0; v < nvec; ++v) {
+        scores[v] = hdc_hamming_scalar(&M[v * words], q, words);
+    }
+}
