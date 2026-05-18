@@ -34,7 +34,7 @@ int main(){
     x[2] = 0; y[2] = 0;
     x[3] = 1; y[3] = 1; 
 
-    hdc_bind(x,y,z,vl);
+    hdc_bind(x,y,z,words);
 
     for (size_t i = 0; i < words; i++) {
         printf("z[%zu]: %lu\n", i, z[i]);

@@ -30,7 +30,9 @@ int main(){
     x[0] = 1; x[1] = 0; x[2] = 5; x[3] = 0;
     y[0] = 1; y[1] = 2; y[2] = 5; y[3] = 8;
 
-    hdc_hamming(x,y,acc,words,alignment,alloc_size);
+    size_t vl = get_rvv_vl();
+
+    hdc_hamming(x,y,acc,vl,alignment,alloc_size);
 
     printf("Score: %lu\n", *acc);
 
