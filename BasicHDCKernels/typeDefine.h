@@ -68,9 +68,11 @@ void hdc_hamming(
     size_t vl = get_rvv_vl(words - i);
 
     hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
-    vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
+    //vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
 
     hdc_bind(x,y,z,vl); // Perform XOR
+
+    vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
     vbool64_t bz = __riscv_vmsne_vx_u64m1_b64(vz, 0, vl); // Need bool argument
 
     *acc = __riscv_vcpop_m_b64(bz, vl); // pop count

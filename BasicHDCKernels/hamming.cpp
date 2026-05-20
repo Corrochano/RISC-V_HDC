@@ -18,10 +18,10 @@ limitations under the License.
 using namespace std;
 
 int main(){
-    size_t words = 4;
+    size_t words = (256 + 63) / 64;
     size_t alignment = 64;
     size_t total_bytes = words * sizeof(hdc_word_t);
-    size_t alloc_size = total_bytes + alignment;
+    size_t alloc_size = ((total_bytes + (alignment - 1)) / alignment) * alignment;
 
     hdc_word_t *x = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
     hdc_word_t *y = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
