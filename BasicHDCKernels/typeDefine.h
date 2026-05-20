@@ -34,7 +34,6 @@ void hdc_bind(
     size_t words)
 {   
     size_t i = 0;
-
     while (i < words){
         // Get VL
         size_t vl = get_rvv_vl(words - i);
@@ -62,20 +61,22 @@ void hdc_hamming(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-
-    // Get VL
-    size_t vl = get_rvv_vl(words - i);
-
     hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
     //vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
 
-    hdc_bind(x,y,z,vl); // Perform XOR
+    hdc_bind(x,y,z,words); // Perform XOR
 
-    vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
-    vbool64_t bz = __riscv_vmsne_vx_u64m1_b64(vz, 0, vl); // Need bool argument
+    size_t i = 0;
+    while (i < words){
+        // Get VL
+        size_t vl = get_rvv_vl(words - i);
+        vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector    
+        vbool64_t bz = __riscv_vmsne_vx_u64m1_b64(vz, 0, vl); // Need bool argument
 
-    *acc = __riscv_vcpop_m_b64(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b64(bz, vl); // pop count
+
+        i += vl;
+    }
 
     free(z);
 }
