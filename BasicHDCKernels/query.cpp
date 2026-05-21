@@ -18,27 +18,74 @@ limitations under the License.
 using namespace std;
 
 int main(){
-    size_t words = 4;
+// 1. Configuración de dimensiones
+    size_t nvec = 3;          // Vamos a comparar contra 3 vectores en la matriz M
+    size_t words = 8;         // 8 words * 8 bytes = 64 bytes (así coincide con la alineación)
     size_t alignment = 64;
+
     size_t total_bytes = words * sizeof(hdc_word_t);
-    size_t alloc_size = total_bytes + alignment;
+    size_t alloc_size = ((total_bytes + (alignment - 1)) / alignment) * alignment;
 
-    hdc_word_t *x = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
-    hdc_word_t *y = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
-    hdc_score_t *acc = (hdc_score_t*)aligned_alloc(alignment, alloc_size); 
+    // 2. Asignación de memoria alineada
+    // Matriz M: Contiene 'nvec' vectores seguidos
+    size_t total_M_bytes = nvec * words * sizeof(hdc_word_t);
+    size_t alloc_size_M = ((total_M_bytes + (alignment - 1)) / alignment) * alignment;
+    hdc_word_t *M = (hdc_word_t*)aligned_alloc(alignment, alloc_size_M);
 
-    x[0] = 1; x[1] = 0; x[2] = 5; x[3] = 0;
-    y[0] = 1; y[1] = 2; y[2] = 5; y[3] = 8;
+    // Vector de consulta q
+    hdc_word_t *q = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
 
-    size_t vl = get_rvv_vl();
+    // Array de puntuaciones (un score por cada vector en M)
+    size_t total_scores_bytes = nvec * sizeof(hdc_score_t);
+    size_t alloc_size_scores = ((total_scores_bytes + (alignment - 1)) / alignment) * alignment;
+    hdc_score_t *scores = (hdc_score_t*)aligned_alloc(alignment, alloc_size_scores);
 
-    hdc_hamming(x,y,acc,vl,alignment,alloc_size);
+    // 3. Inicialización de datos de prueba
+    // Rellenamos la matriz M con patrones predecibles
+    for (size_t i = 0; i < nvec; i++) {
+        for (size_t j = 0; j < words; j++) {
+            // El vector 0 tendrá valores bajos, el vector 2 valores más altos
+            M[i * words + j] = i + j; 
+        }
+    }
 
-    printf("Score: %lu\n", *acc);
+    // Rellenamos el query q
+    for (size_t j = 0; j < words; j++) {
+        q[j] = j; // Idéntico al primer vector de M (i=0) para que el score sea perfecto/bajo
+    }
 
-    free(x);
-    free(y);
-    free(acc);
+    // Inicializamos los scores a 0
+    for (size_t i = 0; i < nvec; i++) {
+        scores[i] = 0;
+    }
+
+    /*
+    printf("Vectores en la matriz:\n");
+    for (size_t i = 0; i < nvec * words; i++) {
+        printf("Vector M[%lu]\n", i % words);
+        printf("%lu\n", M[i]);
+        printf("\n");
+    }
+
+    printf("Vector q:\n");
+    for(size_t j = 0; j < words; j++){
+            printf("%lu\n", q[j]);
+    }
+    */
+
+    printf("Ejecutando hdc_query para %lu vectores...\n", nvec);
+    hdc_query(M, q, scores, nvec, words, alignment, alloc_size);
+
+    // 5. Mostrar resultados
+    printf("\n--- RESULTADOS ---\n");
+    for (size_t i = 0; i < nvec; i++) {
+        printf("Vector M[%lu] -> Score: %lu\n", i, scores[i]);
+    }
+
+    // 6. Liberar memoria
+    free(M);
+    free(q);
+    free(scores);
 
     return 0;
 }
