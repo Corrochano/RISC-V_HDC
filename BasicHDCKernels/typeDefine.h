@@ -81,18 +81,21 @@ void hdc_hamming(
     free(z);
 }
 
-/*
 void hdc_query(
     const hdc_word_t *M,
     const hdc_word_t *q,
     hdc_score_t *scores,
     size_t nvec,
-    size_t words)
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size)
 {
-
-    //*scores = 
-    for (size_t v = 0; v < nvec; ++v) {
-        scores[v] = hdc_hamming(&M[v * words], q, words);
+    size_t i = 0;
+    while (i < nvec){
+        size_t vl = get_rvv_vl(words - i);
+        
+        hdc_hamming(&M[i * words], q, &scores[i], words, alignment, alloc_size);
+        
+        i++;
     }
 }
-*/
