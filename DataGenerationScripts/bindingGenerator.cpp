@@ -18,6 +18,7 @@ limitations under the License.
 int main(){
     size_t words = 8;
     size_t alignment = 64;
+    size_t total_bytes = words * sizeof(hdc_word_t);
 
     size_t alloc_size = ((total_bytes + (alignment - 1)) / alignment) * alignment;
 
@@ -30,7 +31,7 @@ int main(){
 
     hdc_bind(x, y, z, words);
     for (size_t i = 0; i < words; i++) {
-        printf("random x[%zu]: %lx | y[%zu]: %lx -> z[%zu]: %lx\n", 
+        printf("random x[%lu]: %lu | y[%lu]: %lu -> z[%lu]: %lu\n", 
                i, x[i], i, y[i], i, z[i]);
     }
 
