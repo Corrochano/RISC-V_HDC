@@ -35,7 +35,7 @@ void scalar_hamming(
 
     for (size_t i = 0; i < words; ++i) {
         if ((x[i] ^ y[i]) != 0) {
-            *acc++;
+            (*acc)++;
         }
     }
 }
