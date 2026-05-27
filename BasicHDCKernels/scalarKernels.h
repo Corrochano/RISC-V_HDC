@@ -15,13 +15,40 @@ limitations under the License.
 */
 #include "typeDefine.h"
 
-void scalarBinding(const hdc_word_t* dataset, const hdc_word_t* query, hdc_word_t* results, size_t N, size_t words) {
-    for (size_t i = 0; i < N; i++) {
-        hdc_word_t acc = 0;
-        size_t offset = i * words;
-        for (size_t j = 0; j < words; j++) {
-            acc ^= (dataset[offset + j] ^ query[j]); // Operación de ejemplo (XOR)
+void scalar_bind(
+    const hdc_word_t *x,
+    const hdc_word_t *y,
+    hdc_word_t *z,
+    size_t words) 
+{    
+        for (size_t i = 0; i < words; ++i) {
+        z[i] = x[i] ^ y[i];
+    }
+}
+
+void scalar_hamming(
+    const hdc_word_t *x,
+    const hdc_word_t *y,
+    hdc_score_t *acc,
+    size_t words)
+{
+
+    for (size_t i = 0; i < words; ++i) {
+        if ((x[i] ^ y[i]) != 0) {
+            *acc++;
         }
-        results[i] = acc;
+    }
+}
+
+void scalar_query( 
+    const hdc_word_t *M,
+    const hdc_word_t *q,
+    hdc_score_t *scores,
+    size_t nvec,
+    size_t words)
+{
+for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; 
+        scalar_hamming(&M[i * words], q, &scores[i], words);
     }
 }
