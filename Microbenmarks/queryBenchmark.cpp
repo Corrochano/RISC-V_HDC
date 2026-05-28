@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     size_t matrix_words = nvec * words;
     size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
 
-    hdc_word_t* M = (hdc_word_t*)aligned_alloc(ALIGNMENT, matrix_alloc_size);
+    hdc_word_t* M = (hdc_word_t*)aligned_alloc(ALIGNMENT, matrix_alloc_size); // I can manage it like a big vector with all in a row
     hdc_word_t* q = (hdc_word_t*)aligned_alloc(ALIGNMENT, alloc_size);
     hdc_score_t* scores = (hdc_score_t*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t));
 
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     printf("Warming up...\n");
     hdc_query(M, q, scores, nvec, words, ALIGNMENT, alloc_size);
 
-    printf("Start\n");
+    printf("Start vectoriced\n");
     auto start = chrono::high_resolution_clock::now();
     
     hdc_query(M, q, scores, nvec, words, ALIGNMENT, alloc_size);
@@ -62,7 +62,28 @@ int main(int argc, char* argv[]) {
 
     double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
 
-    printf(", %lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    scalar_query(M, q, scores, nvec, words);
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (gbs > 0) ? (sgbs / gbs) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results:\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results:\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
 
     free(M);
     free(q);
