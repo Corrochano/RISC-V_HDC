@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 #include <chrono>
-
+#include <fstream>
 //#include "typeDefine.h"
 //#include "scalarKernels.h"
 #include "randomUtils.h"
@@ -84,6 +84,22 @@ int main(int argc, char* argv[]) {
     printf("----------------------------------------------------------------------------------------\n");
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("query_benchmark.txt");
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results:\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results:\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
 
     free(M);
     free(q);
