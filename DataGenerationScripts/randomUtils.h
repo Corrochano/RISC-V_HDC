@@ -13,13 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-#include <vector>
-#include <ctime>
-
-#include "typeDefine.h"
+#include "scalarKernels.h"
 
 void randomize_hdc_vector(hdc_word_t* vec, size_t words) {
     for (size_t i = 0; i < words; i++) {
         vec[i] = ((hdc_word_t)rand() << 32) | rand();
     }
 }
+
+

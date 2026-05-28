@@ -13,14 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-#include <iostream>
 #include <chrono>
-#include <vector>
-#include <string>
-#include <cstring>
 
-#include "typeDefine.h"
-#include "scalarKernels.h"
+//#include "typeDefine.h"
+//#include "scalarKernels.h"
 #include "randomUtils.h"
 
 using namespace std;
@@ -28,10 +24,10 @@ using namespace std;
 const size_t ALIGNMENT = 64; 
 
 int main(int argc, char* argv[]) {
-    size_t nvec = std::stoull(argv[1]);
-    size_t words = std::stoull(argv[2]);
+    size_t nvec = stoull(argv[1]);
+    size_t words = stoull(argv[2]);
 
-    srand(time(NULL));
+    //srand(time(NULL));
 
     size_t alloc_size = ((words * sizeof(hdc_word_t) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
 
@@ -42,10 +38,7 @@ int main(int argc, char* argv[]) {
     hdc_word_t* q = (hdc_word_t*)aligned_alloc(ALIGNMENT, alloc_size);
     hdc_score_t* scores = (hdc_score_t*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t));
 
-    if (!M || !q || !scores) {
-        std::cerr << "Error: Fallo en la asignación de memoria alineada.\n";
-        return 1;
-    }
+    printf("Create vectors\n");
 
     randomize_hdc_vector(M, matrix_words);
     randomize_hdc_vector(q, words);
@@ -55,22 +48,22 @@ int main(int argc, char* argv[]) {
     double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
 
     // Warmup
+    printf("Warming up...\n");
     hdc_query(M, q, scores, nvec, words, ALIGNMENT, alloc_size);
 
-    auto start = std::chrono::high_resolution_clock::now();
+    printf("Start\n");
+    auto start = chrono::high_resolution_clock::now();
     
     hdc_query(M, q, scores, nvec, words, ALIGNMENT, alloc_size);
     
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end - start;
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
     double seconds = duration.count();
 
     double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
 
+    printf(", %lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
 
-    std::cout << "," << nvec << "," << words << "," << seconds << "," << gbs << "\n";
-
-    // Liberar memoria
     free(M);
     free(q);
     free(scores);
