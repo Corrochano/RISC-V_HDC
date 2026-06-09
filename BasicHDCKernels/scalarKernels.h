@@ -15,6 +15,10 @@ limitations under the License.
 */
 #include "typeDefine.h"
 
+//////////////////
+// Bind Section //
+//////////////////
+
 void scalar_bind(
     const hdc_word_t *x,
     const hdc_word_t *y,
@@ -25,6 +29,43 @@ void scalar_bind(
         z[i] = x[i] ^ y[i];
     }
 }
+
+void scalar_bind(
+    const hdc_word_t_32 *x,
+    const hdc_word_t_32 *y,
+    hdc_word_t_32 *z,
+    size_t words) 
+{    
+        for (size_t i = 0; i < words; ++i) {
+        z[i] = x[i] ^ y[i];
+    }
+}
+
+void scalar_bind(
+    const hdc_word_t_16 *x,
+    const hdc_word_t_16 *y,
+    hdc_word_t_16 *z,
+    size_t words) 
+{    
+        for (size_t i = 0; i < words; ++i) {
+        z[i] = x[i] ^ y[i];
+    }
+}
+
+void scalar_bind(
+    const hdc_word_t_8 *x,
+    const hdc_word_t_8 *y,
+    hdc_word_t_8 *z,
+    size_t words) 
+{    
+        for (size_t i = 0; i < words; ++i) {
+        z[i] = x[i] ^ y[i];
+    }
+}
+
+/////////////////////
+// Hamming Section //
+/////////////////////
 
 void scalar_hamming(
     const hdc_word_t *x,
@@ -40,10 +81,95 @@ void scalar_hamming(
     }
 }
 
+void scalar_hamming(
+    const hdc_word_t_32 *x,
+    const hdc_word_t_32 *y,
+    hdc_score_t_32 *acc,
+    size_t words)
+{
+
+    for (size_t i = 0; i < words; ++i) {
+        if ((x[i] ^ y[i]) != 0) {
+            (*acc)++;
+        }
+    }
+}
+
+void scalar_hamming(
+    const hdc_word_t_16 *x,
+    const hdc_word_t_16 *y,
+    hdc_score_t_16 *acc,
+    size_t words)
+{
+
+    for (size_t i = 0; i < words; ++i) {
+        if ((x[i] ^ y[i]) != 0) {
+            (*acc)++;
+        }
+    }
+}
+
+void scalar_hamming(
+    const hdc_word_t_8 *x,
+    const hdc_word_t_8 *y,
+    hdc_score_t_8 *acc,
+    size_t words)
+{
+
+    for (size_t i = 0; i < words; ++i) {
+        if ((x[i] ^ y[i]) != 0) {
+            (*acc)++;
+        }
+    }
+}
+
+///////////////////
+// Query Section //
+///////////////////
+
 void scalar_query( 
     const hdc_word_t *M,
     const hdc_word_t *q,
     hdc_score_t *scores,
+    size_t nvec,
+    size_t words)
+{
+for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; 
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+}
+
+void scalar_query( 
+    const hdc_word_t_32 *M,
+    const hdc_word_t_32 *q,
+    hdc_score_t_32 *scores,
+    size_t nvec,
+    size_t words)
+{
+for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; 
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+}
+
+void scalar_query( 
+    const hdc_word_t_16 *M,
+    const hdc_word_t_16 *q,
+    hdc_score_t_16 *scores,
+    size_t nvec,
+    size_t words)
+{
+for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; 
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+}
+
+void scalar_query( 
+    const hdc_word_t_8 *M,
+    const hdc_word_t_8 *q,
+    hdc_score_t_8 *scores,
     size_t nvec,
     size_t words)
 {

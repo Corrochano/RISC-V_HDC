@@ -23,79 +23,15 @@ limitations under the License.
 typedef uint64_t hdc_word_t;
 typedef uint64_t hdc_score_t;
 
+typedef uint32_t hdc_word_t_32;
+typedef uint32_t hdc_score_t_32;
+
+typedef uint32_t hdc_word_t_16;
+typedef uint32_t hdc_score_t_16;
+
+typedef uint32_t hdc_word_t_8;
+typedef uint32_t hdc_score_t_8;
+
 size_t get_rvv_vl(size_t avl) {
       return __riscv_vsetvl_e64m1(avl);
 }                                   
-
-void hdc_bind(
-    const hdc_word_t *x,
-    const hdc_word_t *y,
-    hdc_word_t *z,
-    size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl(words - i);
-        
-        // Load as vectors
-        vuint64m1_t vx = __riscv_vle64_v_u64m1(&x[i], vl);
-        vuint64m1_t vy = __riscv_vle64_v_u64m1(&y[i], vl);
-
-        // Execute xor
-        vuint64m1_t vz = __riscv_vxor_vv_u64m1(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse64_v_u64m1(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
-}
-
-void hdc_hamming(
-    const hdc_word_t *x,
-    const hdc_word_t *y,
-    hdc_score_t *acc,
-    size_t words,
-    size_t alignment, 
-    size_t alloc_size)
-{
-    hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
-    //vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
-
-    hdc_bind(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl(words - i);
-        vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector    
-        vbool64_t bz = __riscv_vmsne_vx_u64m1_b64(vz, 0, vl); // Need bool argument
-
-        *acc += __riscv_vcpop_m_b64(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
-}
-
-void hdc_query(
-    const hdc_word_t *M,
-    const hdc_word_t *q,
-    hdc_score_t *scores,
-    size_t nvec,
-    size_t words,
-    size_t alignment, 
-    size_t alloc_size)
-{
-    size_t i = 0;
-    while (i < nvec){
-        size_t vl = get_rvv_vl(words - i);
-        
-        hdc_hamming(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
-}
