@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("bind_benchmark.txt");
+    ofstream output_file("bind_benchmark_64.txt");
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
