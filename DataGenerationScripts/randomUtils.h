@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-#include "scalarKernels.h"
+#include "typeDefine.h"
 
 void randomize_hdc_vector(hdc_word_t* vec, size_t words) {
     for (size_t i = 0; i < words; i++) {
@@ -21,4 +21,20 @@ void randomize_hdc_vector(hdc_word_t* vec, size_t words) {
     }
 }
 
+void randomize_hdc_vector(hdc_word_t_32* vec, size_t words) {
+    for (size_t i = 0; i < words; i++) {
+        vec[i] = ((hdc_word_t_32)rand() << 32) | rand();
+    }
+}
 
+void randomize_hdc_vector(hdc_word_t_16* vec, size_t words) {
+    for (size_t i = 0; i < words; i++) {
+        vec[i] = ((hdc_word_t_16)rand() << 32) | rand();
+    }
+}
+
+void randomize_hdc_vector(hdc_word_t_8* vec, size_t words) {
+    for (size_t i = 0; i < words; i++) {
+        vec[i] = ((hdc_word_t_8)rand() << 32) | rand();
+    }
+}

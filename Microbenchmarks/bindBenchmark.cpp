@@ -16,6 +16,8 @@ limitations under the License.
 #include <chrono>
 #include <fstream>
 #include "randomUtils.h"
+#include "scalarKernels.h"
+#include "vectorialKernels.h"
 
 using namespace std;
 
