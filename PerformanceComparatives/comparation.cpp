@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import "bindBenchmark.cpp";
-import "hammerBenchmark.cpp";
-import "queryBenchmark.cpp";
+#include "bindBenchmark.h";
+#include "hammerBenchmark.h";
+#include "queryBenchmark.h";
 
 using namespace std;
 
