@@ -23,7 +23,8 @@ using namespace std;
 
 const size_t ALIGNMENT = 64; 
 
-int queryBenchmark_64(int argc, char* argv[]) {
+benchmarkResult queryBenchmark_64(int argc, char* argv[]) {
+    benchmarkResult results;
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
 
@@ -105,10 +106,16 @@ int queryBenchmark_64(int argc, char* argv[]) {
     free(q);
     free(scores);
 
-    return seconds, gbs, sseconds, sgbs, speedup;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
 
-int queryBenchmark_32(int argc, char* argv[]) {
+benchmarkResult queryBenchmark_32(int argc, char* argv[]) {
+    benchmarkResult results;
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
 
@@ -190,10 +197,16 @@ int queryBenchmark_32(int argc, char* argv[]) {
     free(q);
     free(scores);
 
-    return seconds, gbs, sseconds, sgbs, speedup;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
 
-int queryBenchmark_16(int argc, char* argv[]) {
+benchmarkResult queryBenchmark_16(int argc, char* argv[]) {
+    benchmarkResult results;
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
 
@@ -275,10 +288,16 @@ int queryBenchmark_16(int argc, char* argv[]) {
     free(q);
     free(scores);
 
-    return seconds, gbs, sseconds, sgbs, speedup;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
 
-int queryBenchmark_8(int argc, char* argv[]) {
+benchmarkResult queryBenchmark_8(int argc, char* argv[]) {
+    benchmarkResult results;
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
 
@@ -360,5 +379,10 @@ int queryBenchmark_8(int argc, char* argv[]) {
     free(q);
     free(scores);
 
-    return seconds, gbs, sseconds, sgbs, speedup;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
