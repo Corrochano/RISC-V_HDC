@@ -23,11 +23,13 @@ using namespace std;
 
 const size_t ALIGNMENT = 64; 
 
-int hammingBenchmark_64(int argc, char* argv[]) {
+benchmarkResult hammingBenchmark_64(int argc, char* argv[]) {
     if (argc < 3) {
         printf("Usage: %s <nvec> <words>\n", argv[0]);
         return 1;
     }
+
+    benchmarkResult results;
 
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -115,14 +117,21 @@ int hammingBenchmark_64(int argc, char* argv[]) {
     free(q);
     free(scores);
 
-    return 0;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
 
-int hammingBenchmark_32(int argc, char* argv[]) {
+benchmarkResult hammingBenchmark_32(int argc, char* argv[]) {
     if (argc < 3) {
         printf("Usage: %s <nvec> <words>\n", argv[0]);
         return 1;
     }
+
+    benchmarkResult results;
 
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -210,14 +219,21 @@ int hammingBenchmark_32(int argc, char* argv[]) {
     free(q);
     free(scores);
 
-    return 0;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
 
-int hammingBenchmark_16(int argc, char* argv[]) {
+benchmarkResult hammingBenchmark_16(int argc, char* argv[]) {
     if (argc < 3) {
         printf("Usage: %s <nvec> <words>\n", argv[0]);
         return 1;
     }
+
+    benchmarkResult results;
 
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -305,14 +321,21 @@ int hammingBenchmark_16(int argc, char* argv[]) {
     free(q);
     free(scores);
 
-    return 0;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
 
-int hammingBenchmark_8(int argc, char* argv[]) {
+benchmarkResult hammingBenchmark_8(int argc, char* argv[]) {
     if (argc < 3) {
         printf("Usage: %s <nvec> <words>\n", argv[0]);
         return 1;
     }
+
+    benchmarkResult results;
 
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -400,5 +423,10 @@ int hammingBenchmark_8(int argc, char* argv[]) {
     free(q);
     free(scores);
 
-    return 0;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }

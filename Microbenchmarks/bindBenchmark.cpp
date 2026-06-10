@@ -23,11 +23,13 @@ using namespace std;
 
 const size_t ALIGNMENT = 64; 
 
-int bindingBenchmark_64(int argc, char* argv[]) {
+benchmarkResult bindingBenchmark_64(int argc, char* argv[]) {
     if (argc < 3) {
         printf("Usage: %s <nvec> <words>\n", argv[0]);
         return 1;
     }
+
+    benchmarkResult results;
 
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -112,14 +114,21 @@ int bindingBenchmark_64(int argc, char* argv[]) {
     free(q);
     free(Z);
 
-    return 0;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
 
-int bindingBenchmark_32(int argc, char* argv[]) {
+benchmarkResult bindingBenchmark_32(int argc, char* argv[]) {
     if (argc < 3) {
         printf("Usage: %s <nvec> <words>\n", argv[0]);
         return 1;
     }
+
+    benchmarkResult results;
 
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -204,14 +213,21 @@ int bindingBenchmark_32(int argc, char* argv[]) {
     free(q);
     free(Z);
 
-    return 0;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
 
-int bindingBenchmark_16(int argc, char* argv[]) {
+benchmarkResult bindingBenchmark_16(int argc, char* argv[]) {
     if (argc < 3) {
         printf("Usage: %s <nvec> <words>\n", argv[0]);
         return 1;
     }
+
+    benchmarkResult results;
 
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -296,14 +312,21 @@ int bindingBenchmark_16(int argc, char* argv[]) {
     free(q);
     free(Z);
 
-    return 0;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
 
-int bindingBenchmark_8(int argc, char* argv[]) {
+benchmarkResult bindingBenchmark_8(int argc, char* argv[]) {
     if (argc < 3) {
         printf("Usage: %s <nvec> <words>\n", argv[0]);
         return 1;
     }
+
+    benchmarkResult results;
 
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -388,5 +411,10 @@ int bindingBenchmark_8(int argc, char* argv[]) {
     free(q);
     free(Z);
 
-    return 0;
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
 }
