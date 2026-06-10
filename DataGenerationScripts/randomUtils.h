@@ -15,6 +15,14 @@ limitations under the License.
 */
 #include "typeDefine.h"
 
+struct benchmarkResult{
+    double seconds:
+    double gbs;
+    double sseconds;
+    double sgbs;
+    double speedup;
+};
+
 void randomize_hdc_vector(hdc_word_t* vec, size_t words) {
     for (size_t i = 0; i < words; i++) {
         vec[i] = ((hdc_word_t)rand() << 32) | rand();
