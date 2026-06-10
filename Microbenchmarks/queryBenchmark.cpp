@@ -255,7 +255,7 @@ int queryBenchmark_16(int argc, char* argv[]) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("query_benchmark_32.txt");
+    ofstream output_file("query_benchmark_16.txt");
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -340,7 +340,7 @@ int queryBenchmark_8(int argc, char* argv[]) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("query_benchmark_32.txt");
+    ofstream output_file("query_benchmark_8.txt");
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";

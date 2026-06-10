@@ -190,7 +190,7 @@ int hammingBenchmark_32(int argc, char* argv[]) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("hamming_benchmark_64.txt");
+    ofstream output_file("hamming_benchmark_32.txt");
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -285,7 +285,7 @@ int hammingBenchmark_16(int argc, char* argv[]) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("hamming_benchmark_64.txt");
+    ofstream output_file("hamming_benchmark_16.txt");
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -380,7 +380,7 @@ int hammingBenchmark_8(int argc, char* argv[]) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("hamming_benchmark_64.txt");
+    ofstream output_file("hamming_benchmark_8.txt");
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";

@@ -184,7 +184,7 @@ int bindingBenchmark_32(int argc, char* argv[]) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("bind_benchmark_64.txt");
+    ofstream output_file("bind_benchmark_32.txt");
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -276,7 +276,7 @@ int bindingBenchmark_16(int argc, char* argv[]) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("bind_benchmark_64.txt");
+    ofstream output_file("bind_benchmark_16.txt");
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -368,7 +368,7 @@ int bindingBenchmark_8(int argc, char* argv[]) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("bind_benchmark_64.txt");
+    ofstream output_file("bind_benchmark_8.txt");
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
