@@ -20,11 +20,11 @@ limitations under the License.
 
 using namespace std;
 
-void bindComparation(){
-    benchmarkResult bind_64 = bindingBenchmark_64(3, (char*[]){"bindBenchmark", "1000000", "128"});
-    benchmarkResult bind_32 = bindingBenchmark_32(3, (char*[]){"bindBenchmark", "1000000", "128"});
-    benchmarkResult bind_16 = bindingBenchmark_16(3, (char*[]){"bindBenchmark", "1000000", "128"});
-    benchmarkResult bind_8 = bindingBenchmark_8(3, (char*[]){"bindBenchmark", "1000000", "128"});
+void bindComparation(size_t nvec, size_t words){
+    benchmarkResult bind_64 = bindingBenchmark_64(3, (char*[]){"bindBenchmark", nvec, words});
+    benchmarkResult bind_32 = bindingBenchmark_32(3, (char*[]){"bindBenchmark", nvec, words});
+    benchmarkResult bind_16 = bindingBenchmark_16(3, (char*[]){"bindBenchmark", nvec, words});
+    benchmarkResult bind_8 = bindingBenchmark_8(3, (char*[]){"bindBenchmark", nvec, words});
 
     double speedup_32 = (bind_64.gbs > 0) ? (bind_32.gbs / bind_64.gbs) : 0.0;
     double speedup_16 = (bind_64.gbs > 0) ? (bind_16.gbs / bind_64.gbs) : 0.0;
@@ -33,14 +33,26 @@ void bindComparation(){
     printf("Speedup of Bind 32-bit vs 64-bit: %f\n", speedup_32);
     printf("Speedup of Bind 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Bind 8-bit vs 64-bit: %f\n", speedup_8);
+
+    ofstream output_file("bind_speedups.txt");
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup of Bind 32-bit vs 64-bit: %f\n", speedup_32;
+        output_file << "Speedup of Bind 16-bit vs 64-bit: %f\n", speedup_16;
+        output_file << "Speedup of Bind 8-bit vs 64-bit: %f\n", speedup_8;
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
     
 }
 
-void hammerComparation(){
-    benchmarkResult hammer_64 = hammerBenchmark_64(3, (char*[]){"hammerBenchmark", "1000000", "128"});
-    benchmarkResult hammer_32 = hammerBenchmark_32(3, (char*[]){"hammerBenchmark", "1000000", "128"});
-    benchmarkResult hammer_16 = hammerBenchmark_16(3, (char*[]){"hammerBenchmark", "1000000", "128"});
-    benchmarkResult hammer_8 = hammerBenchmark_8(3, (char*[]){"hammerBenchmark", "1000000", "128"});
+void hammerComparation(size_t nvec, size_t words){
+    benchmarkResult hammer_64 = hammerBenchmark_64(3, (char*[]){"hammerBenchmark", nvec, words});
+    benchmarkResult hammer_32 = hammerBenchmark_32(3, (char*[]){"hammerBenchmark", nvec, words});
+    benchmarkResult hammer_16 = hammerBenchmark_16(3, (char*[]){"hammerBenchmark", nvec, words});
+    benchmarkResult hammer_8 = hammerBenchmark_8(3, (char*[]){"hammerBenchmark", nvec, words);
 
     double speedup_32 = (hammer_64.gbs > 0) ? (hammer_32.gbs / hammer_64.gbs) : 0.0;
     double speedup_16 = (hammer_64.gbs > 0) ? (hammer_16.gbs / hammer_64.gbs) : 0.0;
@@ -49,13 +61,25 @@ void hammerComparation(){
     printf("Speedup of Hammer 32-bit vs 64-bit: %f\n", speedup_32);
     printf("Speedup of Hammer 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Hammer 8-bit vs 64-bit: %f\n", speedup_8);
+
+    ofstream output_file("hammer_speedups.txt");
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup of Hammer 32-bit vs 64-bit: %f\n", speedup_32;
+        output_file << "Speedup of Hammer 16-bit vs 64-bit: %f\n", speedup_16;
+        output_file << "Speedup of Hammer 8-bit vs 64-bit: %f\n", speedup_8;
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }    
 }
 
-void queryComparation(){
-    benchmarkResult query_64 = queryBenchmark_64(3, (char*[]){"queryBenchmark", "1000000", "128"});
-    benchmarkResult query_32 = queryBenchmark_32(3, (char*[]){"queryBenchmark", "1000000", "128"});
-    benchmarkResult query_16 = queryBenchmark_16(3, (char*[]){"queryBenchmark", "1000000", "128"});
-    benchmarkResult query_8 = queryBenchmark_8(3, (char*[]){"queryBenchmark", "1000000", "128"});
+void queryComparation(size_t nvec, size_t words){
+    benchmarkResult query_64 = queryBenchmark_64(3, (char*[]){"queryBenchmark", nvec, words});
+    benchmarkResult query_32 = queryBenchmark_32(3, (char*[]){"queryBenchmark", nvec, words});
+    benchmarkResult query_16 = queryBenchmark_16(3, (char*[]){"queryBenchmark", nvec, words});
+    benchmarkResult query_8 = queryBenchmark_8(3, (char*[]){"queryBenchmark", nvec, words});
 
     double speedup_32 = (query_64.gbs > 0) ? (query_32.gbs / query_64.gbs) : 0.0;
     double speedup_16 = (query_64.gbs > 0) ? (query_16.gbs / query_64.gbs) : 0.0;
@@ -64,15 +88,35 @@ void queryComparation(){
     printf("Speedup of Query 32-bit vs 64-bit: %f\n", speedup_32);
     printf("Speedup of Query 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Query 8-bit vs 64-bit: %f\n", speedup_8);
+
+    ofstream output_file("query_speedups.txt");
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup of Query 32-bit vs 64-bit: %f\n", speedup_32;
+        output_file << "Speedup of Query 16-bit vs 64-bit: %f\n", speedup_16;
+        output_file << "Speedup of Query 8-bit vs 64-bit: %f\n", speedup_8;
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
 }
 
-void main() {
+void main(nt argc, char* argv[]) {
+    if (argc < 3) {
+        printf("Usage: %s <nvec> <words>\n", argv[0]);
+        return 1;
+    }
+
+    size_t nvec = stoull(argv[1]);
+    size_t words = stoull(argv[2]);   
+
     printf("Comparing Bind benchmarks...\n");
-    bindComparation();
+    bindComparation(nvec, words);
 
     printf("\nComparing Hammer benchmarks...\n");
-    hammerComparation();
+    hammerComparation(nvec, words);
 
     printf("\nComparing Query benchmarks...\n");
-    queryComparation();
+    queryComparation(nvec, words);
 }
