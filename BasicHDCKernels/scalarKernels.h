@@ -13,13 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+#pragma once
 #include "typeDefine.h"
 
 //////////////////
 // Bind Section //
 //////////////////
 
-void scalar_bind(
+inline void scalar_bind(
     const hdc_word_t *x,
     const hdc_word_t *y,
     hdc_word_t *z,
@@ -30,7 +31,7 @@ void scalar_bind(
     }
 }
 
-void scalar_bind(
+inline void scalar_bind(
     const hdc_word_t_32 *x,
     const hdc_word_t_32 *y,
     hdc_word_t_32 *z,
@@ -41,7 +42,7 @@ void scalar_bind(
     }
 }
 
-void scalar_bind(
+inline void scalar_bind(
     const hdc_word_t_16 *x,
     const hdc_word_t_16 *y,
     hdc_word_t_16 *z,
@@ -52,7 +53,7 @@ void scalar_bind(
     }
 }
 
-void scalar_bind(
+inline void scalar_bind(
     const hdc_word_t_8 *x,
     const hdc_word_t_8 *y,
     hdc_word_t_8 *z,
@@ -67,7 +68,7 @@ void scalar_bind(
 // Hamming Section //
 /////////////////////
 
-void scalar_hamming(
+inline void scalar_hamming(
     const hdc_word_t *x,
     const hdc_word_t *y,
     hdc_score_t *acc,
@@ -81,7 +82,7 @@ void scalar_hamming(
     }
 }
 
-void scalar_hamming(
+inline void scalar_hamming(
     const hdc_word_t_32 *x,
     const hdc_word_t_32 *y,
     hdc_score_t_32 *acc,
@@ -95,7 +96,7 @@ void scalar_hamming(
     }
 }
 
-void scalar_hamming(
+inline void scalar_hamming(
     const hdc_word_t_16 *x,
     const hdc_word_t_16 *y,
     hdc_score_t_16 *acc,
@@ -109,7 +110,7 @@ void scalar_hamming(
     }
 }
 
-void scalar_hamming(
+inline void scalar_hamming(
     const hdc_word_t_8 *x,
     const hdc_word_t_8 *y,
     hdc_score_t_8 *acc,
@@ -127,7 +128,7 @@ void scalar_hamming(
 // Query Section //
 ///////////////////
 
-void scalar_query( 
+inline void scalar_query( 
     const hdc_word_t *M,
     const hdc_word_t *q,
     hdc_score_t *scores,
@@ -140,7 +141,7 @@ for (size_t i = 0; i < nvec; ++i) {
     }
 }
 
-void scalar_query( 
+inline void scalar_query( 
     const hdc_word_t_32 *M,
     const hdc_word_t_32 *q,
     hdc_score_t_32 *scores,
@@ -153,7 +154,7 @@ for (size_t i = 0; i < nvec; ++i) {
     }
 }
 
-void scalar_query( 
+inline void scalar_query( 
     const hdc_word_t_16 *M,
     const hdc_word_t_16 *q,
     hdc_score_t_16 *scores,
@@ -166,7 +167,7 @@ for (size_t i = 0; i < nvec; ++i) {
     }
 }
 
-void scalar_query( 
+inline void scalar_query( 
     const hdc_word_t_8 *M,
     const hdc_word_t_8 *q,
     hdc_score_t_8 *scores,

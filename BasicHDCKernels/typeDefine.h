@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+#pragma once
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -32,6 +33,6 @@ typedef uint16_t hdc_score_t_16;
 typedef uint8_t hdc_word_t_8;
 typedef uint8_t hdc_score_t_8;
 
-size_t get_rvv_vl(size_t avl) {
+inline size_t get_rvv_vl(size_t avl) {
       return __riscv_vsetvl_e64m1(avl);
 }                                   

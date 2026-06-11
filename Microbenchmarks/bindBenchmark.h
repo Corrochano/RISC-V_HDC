@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+#pragma once
 #include <chrono>
 #include <fstream>
 #include "../DataGenerationScripts/randomUtils.h"
@@ -23,12 +24,7 @@ using namespace std;
 
 const size_t ALIGNMENT = 64; 
 
-benchmarkResult bindingBenchmark_64(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("Usage: %s <nvec> <words>\n", argv[0]);
-        return 1;
-    }
-
+inline benchmarkResult bindingBenchmark_64(int argc, char* argv[]) {
     benchmarkResult results;
 
     size_t nvec = stoull(argv[1]);
@@ -124,11 +120,7 @@ benchmarkResult bindingBenchmark_64(int argc, char* argv[]) {
     return results;
 }
 
-benchmarkResult bindingBenchmark_32(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("Usage: %s <nvec> <words>\n", argv[0]);
-        return 1;
-    }
+inline benchmarkResult bindingBenchmark_32(int argc, char* argv[]) {
 
     benchmarkResult results;
 
@@ -225,11 +217,7 @@ benchmarkResult bindingBenchmark_32(int argc, char* argv[]) {
     return results;
 }
 
-benchmarkResult bindingBenchmark_16(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("Usage: %s <nvec> <words>\n", argv[0]);
-        return 1;
-    }
+inline benchmarkResult bindingBenchmark_16(int argc, char* argv[]) {
 
     benchmarkResult results;
 
@@ -326,11 +314,7 @@ benchmarkResult bindingBenchmark_16(int argc, char* argv[]) {
     return results;
 }
 
-benchmarkResult bindingBenchmark_8(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("Usage: %s <nvec> <words>\n", argv[0]);
-        return 1;
-    }
+inline benchmarkResult bindingBenchmark_8(int argc, char* argv[]) {
 
     benchmarkResult results;
 

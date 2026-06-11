@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+#pragma once
 #include <chrono>
 #include <fstream>
 #include "../DataGenerationScripts/randomUtils.h"
@@ -23,7 +24,7 @@ using namespace std;
 
 const size_t ALIGNMENT = 64; 
 
-benchmarkResult queryBenchmark_64(int argc, char* argv[]) {
+inline benchmarkResult queryBenchmark_64(int argc, char* argv[]) {
     benchmarkResult results;
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -114,7 +115,7 @@ benchmarkResult queryBenchmark_64(int argc, char* argv[]) {
     return results;
 }
 
-benchmarkResult queryBenchmark_32(int argc, char* argv[]) {
+inline benchmarkResult queryBenchmark_32(int argc, char* argv[]) {
     benchmarkResult results;
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -205,7 +206,7 @@ benchmarkResult queryBenchmark_32(int argc, char* argv[]) {
     return results;
 }
 
-benchmarkResult queryBenchmark_16(int argc, char* argv[]) {
+inline benchmarkResult queryBenchmark_16(int argc, char* argv[]) {
     benchmarkResult results;
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
@@ -296,7 +297,7 @@ benchmarkResult queryBenchmark_16(int argc, char* argv[]) {
     return results;
 }
 
-benchmarkResult queryBenchmark_8(int argc, char* argv[]) {
+inline benchmarkResult queryBenchmark_8(int argc, char* argv[]) {
     benchmarkResult results;
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);
