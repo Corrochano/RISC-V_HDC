@@ -93,9 +93,7 @@ void queryComparation(size_t nvec, size_t words){
     printf("Speedup of Query 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Query 8-bit vs 64-bit: %f\n", speedup_8);
 
-    ofstream output_file("query_speedups.txt");
-
-ofstream output_file("query_speedups.txt", ios::app);
+    ofstream output_file("query_speedups.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
