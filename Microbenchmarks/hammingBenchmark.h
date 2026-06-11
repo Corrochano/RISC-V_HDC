@@ -16,8 +16,8 @@ limitations under the License.
 #include <chrono>
 #include <fstream>
 #include "../DataGenerationScripts/randomUtils.h"
-#include "/../BasicHDCKernels/scalarKernels.h"
-#include "/../BasicHDCKernels/vectorialKernels.h"
+#include "../BasicHDCKernels/scalarKernels.h"
+#include "../BasicHDCKernels/vectorialKernels.h"
 
 using namespace std;
 
