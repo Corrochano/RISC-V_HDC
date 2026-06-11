@@ -84,7 +84,7 @@ inline benchmarkResult queryBenchmark_64(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("query_benchmark_64.txt");
+    ofstream output_file("query_benchmark_64.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -173,7 +173,7 @@ inline benchmarkResult queryBenchmark_32(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("query_benchmark_32.txt");
+    ofstream output_file("query_benchmark_32.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -262,7 +262,7 @@ inline benchmarkResult queryBenchmark_16(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("query_benchmark_16.txt");
+    ofstream output_file("query_benchmark_16.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -351,7 +351,7 @@ inline benchmarkResult queryBenchmark_8(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("query_benchmark_8.txt");
+    ofstream output_file("query_benchmark_8.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
