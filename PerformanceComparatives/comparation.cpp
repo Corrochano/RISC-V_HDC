@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 #include "../Microbenchmarks/bindBenchmark.h"
-#include "../Microbenchmarks/hammerBenchmark.h"
+#include "../Microbenchmarks/hammingBenchmark.h"
 #include "../Microbenchmarks/queryBenchmark.h"
 
 using namespace std;
