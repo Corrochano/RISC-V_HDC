@@ -23,10 +23,8 @@ limitations under the License.
 
 using namespace std;
 
-inline benchmarkResult queryBenchmark_64(int argc, char* argv[]) {
+inline benchmarkResult queryBenchmark_64(size_t nvec, size_t words) {
     benchmarkResult results;
-    size_t nvec = stoull(argv[1]);
-    size_t words = stoull(argv[2]);
 
     //srand(time(NULL));
 
@@ -114,10 +112,8 @@ inline benchmarkResult queryBenchmark_64(int argc, char* argv[]) {
     return results;
 }
 
-inline benchmarkResult queryBenchmark_32(int argc, char* argv[]) {
+inline benchmarkResult queryBenchmark_32(size_t nvec, size_t words) {
     benchmarkResult results;
-    size_t nvec = stoull(argv[1]);
-    size_t words = stoull(argv[2]);
 
     //srand(time(NULL));
 
@@ -205,10 +201,8 @@ inline benchmarkResult queryBenchmark_32(int argc, char* argv[]) {
     return results;
 }
 
-inline benchmarkResult queryBenchmark_16(int argc, char* argv[]) {
+inline benchmarkResult queryBenchmark_16(size_t nvec, size_t words) {
     benchmarkResult results;
-    size_t nvec = stoull(argv[1]);
-    size_t words = stoull(argv[2]);
 
     //srand(time(NULL));
 
@@ -296,10 +290,8 @@ inline benchmarkResult queryBenchmark_16(int argc, char* argv[]) {
     return results;
 }
 
-inline benchmarkResult queryBenchmark_8(int argc, char* argv[]) {
+inline benchmarkResult queryBenchmark_8(size_t nvec, size_t words) {
     benchmarkResult results;
-    size_t nvec = stoull(argv[1]);
-    size_t words = stoull(argv[2]);
 
     //srand(time(NULL));
 

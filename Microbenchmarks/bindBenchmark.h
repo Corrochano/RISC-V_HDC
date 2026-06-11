@@ -23,11 +23,8 @@ limitations under the License.
 
 using namespace std;
 
-inline benchmarkResult bindingBenchmark_64(int argc, char* argv[]) {
+inline benchmarkResult bindingBenchmark_64(size_t nvec, size_t words) {
     benchmarkResult results;
-
-    size_t nvec = stoull(argv[1]);
-    size_t words = stoull(argv[2]);
 
     size_t matrix_words = nvec * words;
     size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
@@ -119,12 +116,9 @@ inline benchmarkResult bindingBenchmark_64(int argc, char* argv[]) {
     return results;
 }
 
-inline benchmarkResult bindingBenchmark_32(int argc, char* argv[]) {
+inline benchmarkResult bindingBenchmark_32(size_t nvec, size_t words) {
 
     benchmarkResult results;
-
-    size_t nvec = stoull(argv[1]);
-    size_t words = stoull(argv[2]);
 
     size_t matrix_words = nvec * words;
     size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_32) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
@@ -216,12 +210,9 @@ inline benchmarkResult bindingBenchmark_32(int argc, char* argv[]) {
     return results;
 }
 
-inline benchmarkResult bindingBenchmark_16(int argc, char* argv[]) {
+inline benchmarkResult bindingBenchmark_16(size_t nvec, size_t words) {
 
     benchmarkResult results;
-
-    size_t nvec = stoull(argv[1]);
-    size_t words = stoull(argv[2]);
 
     size_t matrix_words = nvec * words;
     size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_16) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
@@ -313,12 +304,8 @@ inline benchmarkResult bindingBenchmark_16(int argc, char* argv[]) {
     return results;
 }
 
-inline benchmarkResult bindingBenchmark_8(int argc, char* argv[]) {
-
+inline benchmarkResult bindingBenchmark_8(size_t nvec, size_t words) {
     benchmarkResult results;
-
-    size_t nvec = stoull(argv[1]);
-    size_t words = stoull(argv[2]);
 
     size_t matrix_words = nvec * words;
     size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_8) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
