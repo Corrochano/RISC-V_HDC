@@ -26,11 +26,11 @@ typedef uint64_t hdc_score_t;
 typedef uint32_t hdc_word_t_32;
 typedef uint32_t hdc_score_t_32;
 
-typedef uint32_t hdc_word_t_16;
-typedef uint32_t hdc_score_t_16;
+typedef uint16_t hdc_word_t_16;
+typedef uint16_t hdc_score_t_16;
 
-typedef uint32_t hdc_word_t_8;
-typedef uint32_t hdc_score_t_8;
+typedef uint8_t hdc_word_t_8;
+typedef uint8_t hdc_score_t_8;
 
 size_t get_rvv_vl(size_t avl) {
       return __riscv_vsetvl_e64m1(avl);

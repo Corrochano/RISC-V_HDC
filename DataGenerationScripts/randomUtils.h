@@ -16,7 +16,7 @@ limitations under the License.
 #include "../BasicHDCKernels/typeDefine.h"
 
 struct benchmarkResult{
-    double seconds:
+    double seconds;
     double gbs;
     double sseconds;
     double sgbs;
