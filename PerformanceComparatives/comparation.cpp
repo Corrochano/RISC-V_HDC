@@ -49,10 +49,10 @@ void bindComparation(size_t nvec, size_t words){
 }
 
 void hammerComparation(size_t nvec, size_t words){
-    benchmarkResult hammer_64 = hammerBenchmark_64(3, (char*[]){"hammerBenchmark", nvec, words});
-    benchmarkResult hammer_32 = hammerBenchmark_32(3, (char*[]){"hammerBenchmark", nvec, words});
-    benchmarkResult hammer_16 = hammerBenchmark_16(3, (char*[]){"hammerBenchmark", nvec, words});
-    benchmarkResult hammer_8 = hammerBenchmark_8(3, (char*[]){"hammerBenchmark", nvec, words);
+    benchmarkResult hammer_64 = hammingBenchmark_64(3, (char*[]){"hammerBenchmark", nvec, words});
+    benchmarkResult hammer_32 = hammingBenchmark_32(3, (char*[]){"hammerBenchmark", nvec, words});
+    benchmarkResult hammer_16 = hammingBenchmark_16(3, (char*[]){"hammerBenchmark", nvec, words});
+    benchmarkResult hammer_8 = hammingBenchmark_8(3,   (char*[]){"hammerBenchmark", nvec, words});
 
     double speedup_32 = (hammer_64.gbs > 0) ? (hammer_32.gbs / hammer_64.gbs) : 0.0;
     double speedup_16 = (hammer_64.gbs > 0) ? (hammer_16.gbs / hammer_64.gbs) : 0.0;

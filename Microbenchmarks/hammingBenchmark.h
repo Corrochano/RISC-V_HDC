@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 #pragma once
+
 #include <chrono>
 #include <fstream>
 #include "../DataGenerationScripts/randomUtils.h"
@@ -25,10 +26,6 @@ using namespace std;
 const size_t ALIGNMENT = 64; 
 
 inline benchmarkResult hammingBenchmark_64(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("Usage: %s <nvec> <words>\n", argv[0]);
-        return 1;
-    }
 
     benchmarkResult results;
 
@@ -127,10 +124,6 @@ inline benchmarkResult hammingBenchmark_64(int argc, char* argv[]) {
 }
 
 inline benchmarkResult hammingBenchmark_32(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("Usage: %s <nvec> <words>\n", argv[0]);
-        return 1;
-    }
 
     benchmarkResult results;
 
@@ -229,10 +222,6 @@ inline benchmarkResult hammingBenchmark_32(int argc, char* argv[]) {
 }
 
 inline benchmarkResult hammingBenchmark_16(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("Usage: %s <nvec> <words>\n", argv[0]);
-        return 1;
-    }
 
     benchmarkResult results;
 
@@ -331,10 +320,6 @@ inline benchmarkResult hammingBenchmark_16(int argc, char* argv[]) {
 }
 
 inline benchmarkResult hammingBenchmark_8(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("Usage: %s <nvec> <words>\n", argv[0]);
-        return 1;
-    }
 
     benchmarkResult results;
 
