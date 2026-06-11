@@ -83,7 +83,7 @@ benchmarkResult bindingBenchmark_64(int argc, char* argv[]) {
     double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
 
     double speedup = (gbs > 0) ? (sgbs / gbs) : 0.0;
-
+    
     printf("----------------------------------------------------------------------------------------\n");
     printf("Vectorized results (Bind):\n");
     printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
@@ -98,6 +98,7 @@ benchmarkResult bindingBenchmark_64(int argc, char* argv[]) {
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "Vectorized results (Bind):\n";
         output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -105,6 +106,7 @@ benchmarkResult bindingBenchmark_64(int argc, char* argv[]) {
         output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
         output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "----------------------------------------------------------------------------------------\n";
         
         output_file.close();
@@ -197,6 +199,7 @@ benchmarkResult bindingBenchmark_32(int argc, char* argv[]) {
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "Vectorized results (Bind):\n";
         output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -204,6 +207,7 @@ benchmarkResult bindingBenchmark_32(int argc, char* argv[]) {
         output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
         output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "----------------------------------------------------------------------------------------\n";
         
         output_file.close();
@@ -296,6 +300,7 @@ benchmarkResult bindingBenchmark_16(int argc, char* argv[]) {
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "Vectorized results (Bind):\n";
         output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -303,6 +308,7 @@ benchmarkResult bindingBenchmark_16(int argc, char* argv[]) {
         output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
         output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "----------------------------------------------------------------------------------------\n";
         
         output_file.close();
