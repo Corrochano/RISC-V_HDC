@@ -22,6 +22,16 @@ limitations under the License.
 
 #include <riscv_vector.h>
 
+const size_t ALIGNMENT = 64; 
+
+struct benchmarkResult{
+    double seconds;
+    double gbs;
+    double sseconds;
+    double sgbs;
+    double speedup;
+};
+
 typedef uint64_t hdc_word_t;
 typedef uint64_t hdc_score_t;
 

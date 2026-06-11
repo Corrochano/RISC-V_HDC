@@ -17,14 +17,6 @@ limitations under the License.
 
 #include "../BasicHDCKernels/typeDefine.h"
 
-struct benchmarkResult{
-    double seconds;
-    double gbs;
-    double sseconds;
-    double sgbs;
-    double speedup;
-};
-
 inline void randomize_hdc_vector(hdc_word_t* vec, size_t words) {
     for (size_t i = 0; i < words; i++) {
         vec[i] = ((hdc_word_t)rand() << 32) | rand();
@@ -33,18 +25,18 @@ inline void randomize_hdc_vector(hdc_word_t* vec, size_t words) {
 
 inline void randomize_hdc_vector(hdc_word_t_32* vec, size_t words) {
     for (size_t i = 0; i < words; i++) {
-        vec[i] = ((hdc_word_t_32)rand() << 32) | rand();
+        vec[i] = ((hdc_word_t_32)rand() << 16) | rand();
     }
 }
 
 inline void randomize_hdc_vector(hdc_word_t_16* vec, size_t words) {
     for (size_t i = 0; i < words; i++) {
-        vec[i] = ((hdc_word_t_16)rand() << 32) | rand();
+        vec[i] = ((hdc_word_t_16)rand()) | rand();
     }
 }
 
 inline void randomize_hdc_vector(hdc_word_t_8* vec, size_t words) {
     for (size_t i = 0; i < words; i++) {
-        vec[i] = ((hdc_word_t_8)rand() << 32) | rand();
+        vec[i] = ((hdc_word_t_8)rand()) | rand();
     }
 }

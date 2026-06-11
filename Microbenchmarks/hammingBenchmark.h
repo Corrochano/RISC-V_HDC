@@ -23,8 +23,6 @@ limitations under the License.
 
 using namespace std;
 
-const size_t ALIGNMENT = 64; 
-
 inline benchmarkResult hammingBenchmark_64(int argc, char* argv[]) {
 
     benchmarkResult results;

@@ -102,14 +102,14 @@ void queryComparation(size_t nvec, size_t words){
     }
 }
 
-void main(nt argc, char* argv[]) {
+int main(int argc, char* argv[]) {
     if (argc < 3) {
         printf("Usage: %s <nvec> <words>\n", argv[0]);
         return 1;
     }
 
-    size_t nvec = stoull(argv[1]);
-    size_t words = stoull(argv[2]);   
+    int nvec = stoull(argv[1]);
+    char* words = stoull(argv[2]);   
 
     printf("Comparing Bind benchmarks...\n");
     bindComparation(nvec, words);
@@ -119,4 +119,6 @@ void main(nt argc, char* argv[]) {
 
     printf("\nComparing Query benchmarks...\n");
     queryComparation(nvec, words);
+
+    return 0;
 }
