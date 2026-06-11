@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-#include "bindBenchmark.h";
-#include "hammerBenchmark.h";
-#include "queryBenchmark.h";
+#include "../Microbenchmarks/bindBenchmark.h"
+#include "../Microbenchmarks/hammerBenchmark.h"
+#include "../Microbenchmarks/queryBenchmark.h"
 
 using namespace std;
 
