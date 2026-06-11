@@ -38,7 +38,7 @@ echo "Running comparation with combinations (nvec x words) ..."
 
 for nvec in "${NVEC_LIST[@]}"; do
   for words in "${WORDS_LIST[@]}"; do
-    "$EXE" --nvec "$nvec" --words "$words" || {
+    "$EXE" "$nvec" "$words" || {
       echo "Command failed for nvec=$nvec words=$words" >&2
     }
   done
