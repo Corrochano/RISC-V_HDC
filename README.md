@@ -4,7 +4,7 @@ This repository focus on optimize hyperdimensional computing (HDC) for RISC-V ar
 It's part of Álvaro Corrochano's PhD Thesis in Computer Science Engenieering at Complutense University of Madrid (UCM).
 
 <div style="text-align: center;">
-  <img src="https://www.ucm.es/data/cont/docs/3-2016-07-21-EscudoUCMTransparenteBig.png" alt="UCM Logo" width="250"/>
+  <img src="https://www.ucm.es/data/cont/docs/3-2016-07-21-Marca%20UCM%20logo%20negro.png" alt="UCM Logo" width="250"/>
 </div>
 
 The repository structure divide into different folders in order to assure a good and legible workspace in the next folders: </br>
