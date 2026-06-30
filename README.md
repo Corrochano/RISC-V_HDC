@@ -32,12 +32,22 @@ The sections below explain some of the most relevant information about the repos
 Álvaro Corrochano López
 
 ## Kernels
+This repository provides highly optimized implementations of core HDC operations tailored for RISC-V. Each kernel includes a standard **scalar version** (sequential C code) and a **vectorial version** written using RVV 1.0 assembly/intrinsics to leverage hardware parallelism.
 
 ### Bind
+The Binding operation combines two hypervectors to create a new, orthogonal hypervector that preserves the properties of both inputs. 
+* **Implementation:** For binary hypervectors, this is executed as an element-wise **XOR** operation. 
+* **RVV 1.0 Optimization:** Uses vector load/store operations (`vle32.v`/`vse32.v`) and vector logical XOR (`vxor.vv`) to process multiple dimensions per clock cycle, scaling dynamically based on the hardware's Vector Length (`VLEN`).
 
 ### Hamming Distance
+The Hamming Distance evaluates the dissimilarity between two hypervectors by counting the number of positions at which the corresponding bits are different.
+* **Implementation:** It requires performing an element-wise XOR between two hypervectors followed by a population count (counting the number of set bits).
+* **RVV 1.0 Optimization:** Leverages vector bitwise operations and efficient vector reduction instructions to accumulate bit counts in parallel across large hypervector dimensions (e.g., $D = 10,000$).
 
 ### Query
+The Query (or Search) operation matches a target hypervector against a trained associative memory (codebook) to identify the closest class or item.
+* **Implementation:** It iterates through the associative memory, computes the Hamming Distance between the query vector and every stored class vector, and extracts the minimum distance (or maximum similarity).
+* **RVV 1.0 Optimization:** Unrolls and vectorizes the distance-checking loop, maximizing data reuse within the vector registers to eliminate pipeline stalls during large-scale lookups.
 
 ## Performance Comparatives Usage
 
