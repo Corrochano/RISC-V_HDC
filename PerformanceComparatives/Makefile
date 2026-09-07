@@ -9,8 +9,7 @@ SRCS = comparation.cpp \
        ../Microbenchmarks/queryBenchmark.cpp \
        ../DataGenerationScripts/randomUtils.cpp \
        ../BasicHDCKernels/scalarKernels.cpp \
-       ../BasicHDCKernels/vectorialKernels.cpp \
-       ../BasicHDCKernels/typeDefine.cpp
+       ../BasicHDCKernels/vectorialKernels.cpp
 
 # Genera la lista de archivos objeto (.o) a partir de los .cpp
 OBJS = $(SRCS:.cpp=.o)
