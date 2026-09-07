@@ -28,7 +28,7 @@ int main(){
     hdc_word_t *y = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
     hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
 
-    size_t vl = get_rvv_vl(words - i);
+    size_t vl = get_rvv_vl(words);
 
     x[0] = 1; y[0] = 0;
     x[1] = 0; y[1] = 1;
