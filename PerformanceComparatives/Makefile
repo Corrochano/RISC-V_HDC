@@ -7,7 +7,6 @@ SRCS = comparation.cpp \
        ../Microbenchmarks/bindBenchmark.cpp \
        ../Microbenchmarks/hammingBenchmark.cpp \
        ../Microbenchmarks/queryBenchmark.cpp \
-       ../DataGenerationScripts/randomUtils.cpp \
        ../BasicHDCKernels/scalarKernels.cpp \
        ../BasicHDCKernels/vectorialKernels.cpp
 
