@@ -253,8 +253,6 @@ void hdc_query(
 {
     size_t i = 0;
     while (i < nvec){
-        size_t vl = get_rvv_vl(words - i);
-        
         hdc_hamming(&M[i * words], q, &scores[i], words, alignment, alloc_size);
         
         i++;
@@ -272,8 +270,6 @@ void hdc_query(
 {
     size_t i = 0;
     while (i < nvec){
-        size_t vl = get_rvv_vl(words - i);
-        
         hdc_hamming(&M[i * words], q, &scores[i], words, alignment, alloc_size);
         
         i++;
@@ -291,8 +287,6 @@ void hdc_query(
 {
     size_t i = 0;
     while (i < nvec){
-        size_t vl = get_rvv_vl(words - i);
-        
         hdc_hamming(&M[i * words], q, &scores[i], words, alignment, alloc_size);
         
         i++;
@@ -310,8 +304,6 @@ void hdc_query(
 {
     size_t i = 0;
     while (i < nvec){
-        size_t vl = get_rvv_vl(words - i);
-        
         hdc_hamming(&M[i * words], q, &scores[i], words, alignment, alloc_size);
         
         i++;
