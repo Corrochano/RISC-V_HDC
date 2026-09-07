@@ -25,7 +25,7 @@ void hdc_bind(
     const hdc_word_t *x,
     const hdc_word_t *y,
     hdc_word_t *z,
-    size_t words)moutai
+    size_t words)
 {   
     size_t i = 0;
     while (i < words){

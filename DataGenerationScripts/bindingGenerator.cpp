@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 #include "randomUtils.h"
+#include "../BasicHDCKernels/vectorialKernels.h"
 
 int main(){
     size_t words = 8;
