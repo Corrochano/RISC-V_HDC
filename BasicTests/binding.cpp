@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 #include "../BasicHDCKernels/typeDefine.h"
+#include "../BasicHDCKernels/vectorialKernels.h"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ int main(){
     hdc_word_t *y = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
     hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
 
-    size_t vl = get_rvv_vl();
+    size_t vl = get_rvv_vl(words - i);
 
     x[0] = 1; y[0] = 0;
     x[1] = 0; y[1] = 1;

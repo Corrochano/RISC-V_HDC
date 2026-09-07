@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 #include "../BasicHDCKernels/typeDefine.h"
+#include "../BasicHDCKernels/vectorialKernels.h"
 
 using namespace std;
 
