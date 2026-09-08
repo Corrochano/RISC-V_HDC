@@ -15,7 +15,9 @@
 ###########################################################################
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -march=rv64gcv -O3 -Wall
+BASE_FLAGS := -Wall -Wextra
+
+CXXFLAGS ?= $(BASE_FLAGS) -march=rv64gcv -O3
 
 # Files to compile
 SRCS = comparation.cpp \
@@ -33,6 +35,24 @@ TARGET = comparation
 
 # Default target to build the executable
 all: $(TARGET)
+
+# --- Flag Profile Targets ---
+
+# RISC-V Vector extension with full O3 optimization
+vector-o3: CXXFLAGS := $(BASE_FLAGS) -march=rv64gcv -O3
+vector-o3: clean $(TARGET)
+
+# RISC-V Vector extension with O2 optimization
+vector-o2: CXXFLAGS := $(BASE_FLAGS) -march=rv64gcv -O2
+vector-o2: clean $(TARGET)
+
+# Scalar build without vector extension (rv64g)
+scalar: CXXFLAGS := $(BASE_FLAGS) -march=rv64g -O3
+scalar: clean $(TARGET)
+
+# Debug build (no optimizations, debug symbols)
+debug: CXXFLAGS := $(BASE_FLAGS) -march=rv64gcv -O0 -g -DDEBUG
+debug: clean $(TARGET)
 
 # Rule for linking the executable from the .o files
 $(TARGET): $(OBJS)
