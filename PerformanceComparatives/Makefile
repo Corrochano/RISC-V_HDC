@@ -1,8 +1,23 @@
-# Compilador y flags
+###########################################################################
+# Copyright 2026 Álvaro Corrochano López
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###########################################################################
+# Compiler and flags
 CXX = g++
 CXXFLAGS = -march=rv64gcv -O3 -Wall
 
-# Archivos fuente
+# Files to compile
 SRCS = comparation.cpp \
        ../Microbenchmarks/bindBenchmark.cpp \
        ../Microbenchmarks/hammingBenchmark.cpp \
@@ -10,24 +25,24 @@ SRCS = comparation.cpp \
        ../BasicHDCKernels/scalarKernels.cpp \
        ../BasicHDCKernels/vectorialKernels.cpp
 
-# Genera la lista de archivos objeto (.o) a partir de los .cpp
+# Object files generated from the source files
 OBJS = $(SRCS:.cpp=.o)
 
-# Nombre del ejecutable final
+# Name of the final executable
 TARGET = comparation
 
-# Regla principal
+# Default target to build the executable
 all: $(TARGET)
 
-# Regla para enlazar el ejecutable a partir de los .o
+# Rule for linking the executable from the .o files
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(TARGET)
 
-# Regla para compilar cada .cpp individualmente a .o
+# Rule for compiling each .cpp file individually to .o
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Regla para limpiar archivos generados
+# Rule for cleaning generated files
 clean:
 	rm -f $(OBJS) $(TARGET)
 
