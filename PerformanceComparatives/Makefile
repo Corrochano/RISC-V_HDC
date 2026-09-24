@@ -46,6 +46,10 @@ vector-o3: clean $(TARGET)
 vector-o2: CXXFLAGS := $(BASE_FLAGS) -march=rv64gcv -O2
 vector-o2: clean $(TARGET)
 
+# RISC-V Vector extension without optimization
+vanilla: CXXFLAGS := $(BASE_FLAGS) -march=rv64gcv -O0
+vanilla: clean $(TARGET)
+
 # Scalar build without vector extension (rv64g)
 scalar: CXXFLAGS := $(BASE_FLAGS) -march=rv64g -O3
 scalar: clean $(TARGET)
