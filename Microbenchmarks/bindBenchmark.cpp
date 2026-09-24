@@ -68,7 +68,7 @@ benchmarkResult bindingBenchmark_64(size_t nvec, size_t words) {
 
     double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
 
-    double speedup = (gbs > 0) ? (sgbs / gbs) : 0.0;
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
     
     printf("----------------------------------------------------------------------------------------\n");
     printf("Vectorized results (Bind):\n");
@@ -162,7 +162,7 @@ benchmarkResult bindingBenchmark_32(size_t nvec, size_t words) {
 
     double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
 
-    double speedup = (gbs > 0) ? (sgbs / gbs) : 0.0;
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
 
     printf("----------------------------------------------------------------------------------------\n");
     printf("Vectorized results (Bind):\n");
@@ -256,7 +256,7 @@ benchmarkResult bindingBenchmark_16(size_t nvec, size_t words) {
 
     double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
 
-    double speedup = (gbs > 0) ? (sgbs / gbs) : 0.0;
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
 
     printf("----------------------------------------------------------------------------------------\n");
     printf("Vectorized results (Bind):\n");
@@ -349,8 +349,8 @@ benchmarkResult bindingBenchmark_8(size_t nvec, size_t words) {
 
     double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
 
-    double speedup = (gbs > 0) ? (sgbs / gbs) : 0.0;
-
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+    
     printf("----------------------------------------------------------------------------------------\n");
     printf("Vectorized results (Bind):\n");
     printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
