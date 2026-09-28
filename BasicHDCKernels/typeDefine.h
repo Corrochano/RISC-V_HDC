@@ -44,6 +44,17 @@ typedef uint16_t hdc_score_t_16;
 typedef uint8_t hdc_word_t_8;
 typedef uint8_t hdc_score_t_8;
 
-inline size_t get_rvv_vl(size_t avl) {
-      return __riscv_vsetvl_e64m1(avl);
+inline size_t get_rvv_vl(size_t avl, int bits) {
+    if (bits == 8) {
+        return __riscv_vsetvl_e8m1(avl);
+    } else if (bits == 16) {
+        return __riscv_vsetvl_e16m1(avl);
+    } else if (bits == 32) {
+        return __riscv_vsetvl_e32m1(avl);
+    } else if (bits == 64) {
+        return __riscv_vsetvl_e64m1(avl);
+    } else {
+        std::cerr << "Unsupported bit width: " << bits << std::endl;
+        std::exit(EXIT_FAILURE);    
+    }
 }                                   

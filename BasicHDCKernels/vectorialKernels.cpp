@@ -30,7 +30,7 @@ void hdc_bind(
     size_t i = 0;
     while (i < words){
         // Get VL
-        size_t vl = get_rvv_vl(words - i);
+        size_t vl = get_rvv_vl(words - i, 64);
         
         // Load as vectors
         vuint64m1_t vx = __riscv_vle64_v_u64m1(&x[i], vl);
@@ -56,7 +56,7 @@ void hdc_bind(
     size_t i = 0;
     while (i < words){
         // Get VL
-        size_t vl = get_rvv_vl(words - i);
+        size_t vl = get_rvv_vl(words - i, 32);
         
         // Load as vectors
         vuint32m1_t vx = __riscv_vle32_v_u32m1(&x[i], vl);
@@ -82,7 +82,7 @@ void hdc_bind(
     size_t i = 0;
     while (i < words){
         // Get VL
-        size_t vl = get_rvv_vl(words - i);
+        size_t vl = get_rvv_vl(words - i, 16);
         
         // Load as vectors
         vuint16m1_t vx = __riscv_vle16_v_u16m1(&x[i], vl);
@@ -108,7 +108,7 @@ void hdc_bind(
     size_t i = 0;
     while (i < words){
         // Get VL
-        size_t vl = get_rvv_vl(words - i);
+        size_t vl = get_rvv_vl(words - i, 8);
         
         // Load as vectors
         vuint8m1_t vx = __riscv_vle8_v_u8m1(&x[i], vl);
@@ -145,7 +145,7 @@ void hdc_hamming(
     size_t i = 0;
     while (i < words){
         // Get VL
-        size_t vl = get_rvv_vl(words - i);
+        size_t vl = get_rvv_vl(words - i, 64);
         vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector    
         vbool64_t bz = __riscv_vmsne_vx_u64m1_b64(vz, 0, vl); // Need bool argument
 
@@ -172,7 +172,7 @@ void hdc_hamming(
     size_t i = 0;
     while (i < words){
         // Get VL
-        size_t vl = get_rvv_vl(words - i);
+        size_t vl = get_rvv_vl(words - i, 32);
         vuint32m1_t vz = __riscv_vle32_v_u32m1(z, vl); // Need it as a vector    
         vbool32_t bz = __riscv_vmsne_vx_u32m1_b32(vz, 0, vl); // Need bool argument
 
@@ -199,7 +199,7 @@ void hdc_hamming(
     size_t i = 0;
     while (i < words){
         // Get VL
-        size_t vl = get_rvv_vl(words - i);
+        size_t vl = get_rvv_vl(words - i, 16);
         vuint16m1_t vz = __riscv_vle16_v_u16m1(z, vl); // Need it as a vector    
         vbool16_t bz = __riscv_vmsne_vx_u16m1_b16(vz, 0, vl); // Need bool argument
 
@@ -226,7 +226,7 @@ void hdc_hamming(
     size_t i = 0;
     while (i < words){
         // Get VL
-        size_t vl = get_rvv_vl(words - i);
+        size_t vl = get_rvv_vl(words - i, 8);
         vuint8m1_t vz = __riscv_vle8_v_u8m1(z, vl); // Need it as a vector    
         vbool8_t bz = __riscv_vmsne_vx_u8m1_b8(vz, 0, vl); // Need bool argument
 

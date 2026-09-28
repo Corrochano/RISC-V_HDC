@@ -175,7 +175,7 @@ benchmarkResult bindingBenchmark_32(size_t nvec, size_t words) {
     printf("----------------------------------------------------------------------------------------\n");
 
     ofstream output_file("bind_benchmark_32.txt", ios::app);
-
+ Hay un problema que juega con los permisos de los ficheros. Comprobar que la solución propuesta es correcta y ajustar los permisos de forma adecuada
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -350,7 +350,7 @@ benchmarkResult bindingBenchmark_8(size_t nvec, size_t words) {
     double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
 
     double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
-    
+
     printf("----------------------------------------------------------------------------------------\n");
     printf("Vectorized results (Bind):\n");
     printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
