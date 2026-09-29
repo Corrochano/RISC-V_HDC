@@ -57,7 +57,7 @@ void bindComparation(size_t nvec, size_t words){
     speedup_16 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_16.gbs) : 0.0;
     speedup_8 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_8.gbs) : 0.0;
 
-    output_file("bind_speedups_m2.txt", ios::app);
+    output_file.open("bind_speedups_m2.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -80,7 +80,7 @@ void bindComparation(size_t nvec, size_t words){
     speedup_16 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_16.gbs) : 0.0;
     speedup_8 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_8.gbs) : 0.0;
 
-    output_file("bind_speedups_m4.txt", ios::app);
+    output_file.open("bind_speedups_m4.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -103,7 +103,7 @@ void bindComparation(size_t nvec, size_t words){
     speedup_16 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_16.gbs) : 0.0;
     speedup_8 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_8.gbs) : 0.0;
 
-    output_file("bind_speedups_m8.txt", ios::app);
+    output_file.open("bind_speedups_m8.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -160,7 +160,7 @@ void hammerComparation(size_t nvec, size_t words){
     printf("Speedup of Hammer 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Hammer 8-bit vs 64-bit: %f\n", speedup_8);
 
-    output_file("hamming_speedups_m2.txt", ios::app);
+    output_file.open("hamming_speedups_m2.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -187,7 +187,7 @@ void hammerComparation(size_t nvec, size_t words){
     printf("Speedup of Hammer 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Hammer 8-bit vs 64-bit: %f\n", speedup_8);
 
-    output_file("hamming_speedups_m4.txt", ios::app);
+    output_file.open("hamming_speedups_m4.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -213,7 +213,7 @@ void hammerComparation(size_t nvec, size_t words){
     printf("Speedup of Hammer 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Hammer 8-bit vs 64-bit: %f\n", speedup_8);
 
-    output_file("hamming_speedups_m8.txt", ios::app);
+    output_file.open("hamming_speedups_m8.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -269,7 +269,7 @@ void queryComparation(size_t nvec, size_t words){
     printf("Speedup of Query 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Query 8-bit vs 64-bit: %f\n", speedup_8);
 
-    output_file("query_speedups_m2.txt", ios::app);
+    output_file.open("query_speedups_m2.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -296,7 +296,7 @@ void queryComparation(size_t nvec, size_t words){
     printf("Speedup of Query 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Query 8-bit vs 64-bit: %f\n", speedup_8);
 
-    output_file("query_speedups_m8.txt", ios::app);
+    output_file.open("query_speedups_m8.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -323,7 +323,7 @@ void queryComparation(size_t nvec, size_t words){
     printf("Speedup of Query 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Query 8-bit vs 64-bit: %f\n", speedup_8);
 
-    output_file("query_speedups_m2.txt", ios::app);
+    output_file.open("query_speedups_m2.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
