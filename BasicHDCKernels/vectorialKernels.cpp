@@ -448,9 +448,9 @@ void hdc_hamming_m2(
         // Get VL
         size_t vl = get_rvv_vl_m2(words - i, 64);
         vuint64m2_t vz = __riscv_vle64_v_u64m2(z, vl); // Need it as a vector    
-        vbool64_t bz = __riscv_vmsne_vx_u64m2_b64(vz, 0, vl); // Need bool argument
+        vbool32_t bz = __riscv_vmsne_vx_u64m2_b32(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b64(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b32(bz, vl); // pop count
 
         i += vl;
     }
@@ -475,9 +475,9 @@ void hdc_hamming_m2(
         // Get VL
         size_t vl = get_rvv_vl_m2(words - i, 32);
         vuint32m2_t vz = __riscv_vle32_v_u32m2(z, vl); // Need it as a vector    
-        vbool32_t bz = __riscv_vmsne_vx_u32m2_b32(vz, 0, vl); // Need bool argument
+        vbool16_t bz = __riscv_vmsne_vx_u32m2_b16(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b32(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b16(bz, vl); // pop count
 
         i += vl;
     }
@@ -502,9 +502,9 @@ void hdc_hamming_m2(
         // Get VL
         size_t vl = get_rvv_vl_m2(words - i, 16);
         vuint16m2_t vz = __riscv_vle16_v_u16m2(z, vl); // Need it as a vector    
-        vbool16_t bz = __riscv_vmsne_vx_u16m2_b16(vz, 0, vl); // Need bool argument
+        vbool8_t bz = __riscv_vmsne_vx_u16m2_b8(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b16(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b8(bz, vl); // pop count
 
         i += vl;
     }
@@ -529,9 +529,9 @@ void hdc_hamming_m2(
         // Get VL
         size_t vl = get_rvv_vl_m2(words - i, 8);
         vuint8m2_t vz = __riscv_vle8_v_u8m2(z, vl); // Need it as a vector    
-        vbool8_t bz = __riscv_vmsne_vx_u8m2_b8(vz, 0, vl); // Need bool argument
+        vbool4_t bz = __riscv_vmsne_vx_u8m2_b4(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b8(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b4(bz, vl); // pop count
 
         i += vl;
     }
@@ -745,9 +745,9 @@ void hdc_hamming_m4(
         // Get VL
         size_t vl = get_rvv_vl_m4(words - i, 64);
         vuint64m4_t vz = __riscv_vle64_v_u64m4(z, vl); // Need it as a vector    
-        vbool64_t bz = __riscv_vmsne_vx_u64m4_b64(vz, 0, vl); // Need bool argument
+        vbool16_t bz = __riscv_vmsne_vx_u64m4_b16(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b64(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b16(bz, vl); // pop count
 
         i += vl;
     }
@@ -772,9 +772,9 @@ void hdc_hamming_m4 (
         // Get VL
         size_t vl = get_rvv_vl_m4(words - i, 32);
         vuint32m4_t vz = __riscv_vle32_v_u32m4(z, vl); // Need it as a vector    
-        vbool32_t bz = __riscv_vmsne_vx_u32m4_b32(vz, 0, vl); // Need bool argument
+        vbool8_t bz = __riscv_vmsne_vx_u32m4_b8(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b32(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b8(bz, vl); // pop count
 
         i += vl;
     }
@@ -799,9 +799,9 @@ void hdc_hamming_m4(
         // Get VL
         size_t vl = get_rvv_vl_m4(words - i, 16);
         vuint16m4_t vz = __riscv_vle16_v_u16m4(z, vl); // Need it as a vector    
-        vbool16_t bz = __riscv_vmsne_vx_u16m4_b16(vz, 0, vl); // Need bool argument
+        vbool4_t bz = __riscv_vmsne_vx_u16m4_b4(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b16(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b4(bz, vl); // pop count
 
         i += vl;
     }
@@ -826,9 +826,9 @@ void hdc_hamming_m4(
         // Get VL
         size_t vl = get_rvv_vl_m4(words - i, 8);
         vuint8m4_t vz = __riscv_vle8_v_u8m4(z, vl); // Need it as a vector    
-        vbool8_t bz = __riscv_vmsne_vx_u8m4_b8(vz, 0, vl); // Need bool argument
+        vbool2_t bz = __riscv_vmsne_vx_u8m4_b2(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b8(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b2(bz, vl); // pop count
 
         i += vl;
     }
@@ -1042,9 +1042,9 @@ void hdc_hamming_m8(
         // Get VL
         size_t vl = get_rvv_vl_m8(words - i, 64);
         vuint64m8_t vz = __riscv_vle64_v_u64m8(z, vl); // Need it as a vector    
-        vbool64_t bz = __riscv_vmsne_vx_u64m8_b64(vz, 0, vl); // Need bool argument
+        vbool8_t bz = __riscv_vmsne_vx_u64m8_b8(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b64(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b8(bz, vl); // pop count
 
         i += vl;
     }
@@ -1069,9 +1069,9 @@ void hdc_hamming_m8(
         // Get VL
         size_t vl = get_rvv_vl_m8(words - i, 32);
         vuint32m8_t vz = __riscv_vle32_v_u32m8(z, vl); // Need it as a vector    
-        vbool32_t bz = __riscv_vmsne_vx_u32m8_b32(vz, 0, vl); // Need bool argument
+        vbool4_t bz = __riscv_vmsne_vx_u32m8_b4(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b32(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b4(bz, vl); // pop count
 
         i += vl;
     }
@@ -1096,9 +1096,9 @@ void hdc_hamming_m8(
         // Get VL
         size_t vl = get_rvv_vl_m8(words - i, 16);
         vuint16m8_t vz = __riscv_vle16_v_u16m8(z, vl); // Need it as a vector    
-        vbool16_t bz = __riscv_vmsne_vx_u16m8_b16(vz, 0, vl); // Need bool argument
+        vbool2_t bz = __riscv_vmsne_vx_u16m8_b2(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b16(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b2(bz, vl); // pop count
 
         i += vl;
     }
@@ -1123,9 +1123,9 @@ void hdc_hamming_m8(
         // Get VL
         size_t vl = get_rvv_vl_m8(words - i, 8);
         vuint8m8_t vz = __riscv_vle8_v_u8m8(z, vl); // Need it as a vector    
-        vbool8_t bz = __riscv_vmsne_vx_u8m8_b8(vz, 0, vl); // Need bool argument
+        vbool1_t bz = __riscv_vmsne_vx_u8m8_b1(vz, 0, vl);
 
-        *acc += __riscv_vcpop_m_b8(bz, vl); // pop count
+        *acc += __riscv_vcpop_m_b1(bz, vl); // pop count
 
         i += vl;
     }
