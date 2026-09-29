@@ -47,6 +47,75 @@ void bindComparation_m1(size_t nvec, size_t words){
         
         output_file.close();
     }
+
+    bind_64 = bindingBenchmark_64_m2(nvec, words);
+    bind_32 = bindingBenchmark_32_m2(nvec, words);
+    bind_16 = bindingBenchmark_16_m2(nvec, words);
+    bind_8 = bindingBenchmark_8_m2(nvec, words);
+
+    speedup_32 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_32.gbs) : 0.0;
+    speedup_16 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_16.gbs) : 0.0;
+    speedup_8 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_8.gbs) : 0.0;
+
+    ofstream output_file("bind_speedups_m2.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "nvec: " << nvec << "\n";
+        output_file << "Words: " << words << "\n";
+        output_file << "Speedup of Bind 32-bit vs 64-bit: " << speedup_32 << "\n";
+        output_file << "Speedup of Bind 16-bit vs 64-bit: " << speedup_16 << "\n";
+        output_file << "Speedup of Bind 8-bit vs 64-bit: " << speedup_8 << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    bind_64 = bindingBenchmark_64_m4(nvec, words);
+    bind_32 = bindingBenchmark_32_m4(nvec, words);
+    bind_16 = bindingBenchmark_16_m4(nvec, words);
+    bind_8 = bindingBenchmark_8_m4(nvec, words);
+
+    speedup_32 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_32.gbs) : 0.0;
+    speedup_16 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_16.gbs) : 0.0;
+    speedup_8 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_8.gbs) : 0.0;
+
+    ofstream output_file("bind_speedups_m4.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "nvec: " << nvec << "\n";
+        output_file << "Words: " << words << "\n";
+        output_file << "Speedup of Bind 32-bit vs 64-bit: " << speedup_32 << "\n";
+        output_file << "Speedup of Bind 16-bit vs 64-bit: " << speedup_16 << "\n";
+        output_file << "Speedup of Bind 8-bit vs 64-bit: " << speedup_8 << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    bind_64 = bindingBenchmark_64_m8(nvec, words);
+    bind_32 = bindingBenchmark_32_m8(nvec, words);
+    bind_16 = bindingBenchmark_16_m8(nvec, words);
+    bind_8 = bindingBenchmark_8_m8(nvec, words);
+
+    speedup_32 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_32.gbs) : 0.0;
+    speedup_16 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_16.gbs) : 0.0;
+    speedup_8 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_8.gbs) : 0.0;
+
+    ofstream output_file("bind_speedups_m8.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "nvec: " << nvec << "\n";
+        output_file << "Words: " << words << "\n";
+        output_file << "Speedup of Bind 32-bit vs 64-bit: " << speedup_32 << "\n";
+        output_file << "Speedup of Bind 16-bit vs 64-bit: " << speedup_16 << "\n";
+        output_file << "Speedup of Bind 8-bit vs 64-bit: " << speedup_8 << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
     
 }
 
