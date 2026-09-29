@@ -84,7 +84,7 @@ benchmarkResult hammingBenchmark_64_m1(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("hamming_benchmark_64.txt", ios::app);
+    ofstream output_file("hamming_benchmark_64_m1.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -179,7 +179,7 @@ benchmarkResult hammingBenchmark_32_m1(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("hamming_benchmark_32.txt", ios::app);
+    ofstream output_file("hamming_benchmark_32_m1.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -274,7 +274,7 @@ benchmarkResult hammingBenchmark_16_m1(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("hamming_benchmark_16.txt", ios::app);
+    ofstream output_file("hamming_benchmark_16_m1.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -369,7 +369,7 @@ benchmarkResult hammingBenchmark_8_m1(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("hamming_benchmark_8.txt", ios::app);
+    ofstream output_file("hamming_benchmark_8_m1.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";

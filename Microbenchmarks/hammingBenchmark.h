@@ -24,9 +24,21 @@ limitations under the License.
 using namespace std;
 
 benchmarkResult hammingBenchmark_64_m1(size_t nvec, size_t words);
-
 benchmarkResult hammingBenchmark_32_m1(size_t nvec, size_t words);
-
 benchmarkResult hammingBenchmark_16_m1(size_t nvec, size_t words);
-
 benchmarkResult hammingBenchmark_8_m1(size_t nvec, size_t words);
+
+benchmarkResult hammingBenchmark_64_m2(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_32_m2(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_16_m2(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_8_m2(size_t nvec, size_t words);
+
+benchmarkResult hammingBenchmark_64_m4(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_32_m4(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_16_m4(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_8_m4(size_t nvec, size_t words);
+
+benchmarkResult hammingBenchmark_64_m8(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_32_m8(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_16_m8(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_8_m8(size_t nvec, size_t words);

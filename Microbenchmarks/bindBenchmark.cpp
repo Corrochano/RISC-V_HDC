@@ -80,7 +80,7 @@ benchmarkResult bindingBenchmark_64(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("bind_benchmark_64.txt", ios::app);
+    ofstream output_file("bind_benchmark_64_m1.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -174,7 +174,7 @@ benchmarkResult bindingBenchmark_32(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("bind_benchmark_32.txt", ios::app);
+    ofstream output_file("bind_benchmark_32_m1.txt", ios::app);
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -267,7 +267,7 @@ benchmarkResult bindingBenchmark_16(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("bind_benchmark_16.txt", ios::app);
+    ofstream output_file("bind_benchmark_16_m1.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -360,7 +360,7 @@ benchmarkResult bindingBenchmark_8(size_t nvec, size_t words) {
     printf("Speedup: %f\n", speedup);
     printf("----------------------------------------------------------------------------------------\n");
 
-    ofstream output_file("bind_benchmark_8.txt", ios::app);
+    ofstream output_file("bind_benchmark_8_m1.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";

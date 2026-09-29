@@ -34,7 +34,7 @@ void bindComparation_m1(size_t nvec, size_t words){
     printf("Speedup of Bind 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Bind 8-bit vs 64-bit: %f\n", speedup_8);
 
-    ofstream output_file("bind_speedups.txt", ios::app);
+    ofstream output_file("bind_speedups_m1.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -64,7 +64,7 @@ void hammerComparation_m1(size_t nvec, size_t words){
     printf("Speedup of Hammer 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Hammer 8-bit vs 64-bit: %f\n", speedup_8);
 
-    ofstream output_file("hamming_speedups.txt", ios::app);
+    ofstream output_file("hamming_speedups_m1.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -93,7 +93,7 @@ void queryComparation_m1(size_t nvec, size_t words){
     printf("Speedup of Query 16-bit vs 64-bit: %f\n", speedup_16);
     printf("Speedup of Query 8-bit vs 64-bit: %f\n", speedup_8);
 
-    ofstream output_file("query_speedups.txt", ios::app);
+    ofstream output_file("query_speedups_m1.txt", ios::app);
 
     if (output_file.is_open()) {
         output_file << "----------------------------------------------------------------------------------------\n";
@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
     }
     
     size_t nvec = stoull(argv[1]);
-    size_t words = stoull(argv[2]);   
+    size_t words = stoull(argv[2]);
 
     printf("Comparing Bind benchmarks...\n");
     bindComparation_m1(nvec, words);
