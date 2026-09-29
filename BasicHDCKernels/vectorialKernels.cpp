@@ -544,9 +544,9 @@ void hdc_hamming_m2(
 ///////////////////
 
 void hdc_query_m2(
-    const hdc_word_t_64 *M,
-    const hdc_word_t_64 *q,
-    hdc_score_t_64 *scores,
+    const hdc_word_t *M,
+    const hdc_word_t *q,
+    hdc_score_t *scores,
     size_t nvec,
     size_t words,
     size_t alignment, 
@@ -841,9 +841,9 @@ void hdc_hamming_m4(
 ///////////////////
 
 void hdc_query_m4(
-    const hdc_word_t_64 *M,
-    const hdc_word_t_64 *q,
-    hdc_score_t_64 *scores,
+    const hdc_word_t *M,
+    const hdc_word_t *q,
+    hdc_score_t *scores,
     size_t nvec,
     size_t words,
     size_t alignment, 
@@ -1138,9 +1138,9 @@ void hdc_hamming_m8(
 ///////////////////
 
 void hdc_query_m8(
-    const hdc_word_t_64 *M,
-    const hdc_word_t_64 *q,
-    hdc_score_t_64 *scores,
+    const hdc_word_t *M,
+    const hdc_word_t *q,
+    hdc_score_t *scores,
     size_t nvec,
     size_t words,
     size_t alignment, 
