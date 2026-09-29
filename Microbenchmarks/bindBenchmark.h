@@ -23,10 +23,10 @@ limitations under the License.
 
 using namespace std;
 
-benchmarkResult bindingBenchmark_64(size_t nvec, size_t words);
+benchmarkResult bindingBenchmark_64_m1(size_t nvec, size_t words);
 
-benchmarkResult bindingBenchmark_32(size_t nvec, size_t words);
+benchmarkResult bindingBenchmark_32_m1(size_t nvec, size_t words);
 
-benchmarkResult bindingBenchmark_16(size_t nvec, size_t words);
+benchmarkResult bindingBenchmark_16_m1(size_t nvec, size_t words);
 
-benchmarkResult bindingBenchmark_8(size_t nvec, size_t words);
+benchmarkResult bindingBenchmark_8_m1(size_t nvec, size_t words);

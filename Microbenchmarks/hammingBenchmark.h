@@ -23,10 +23,10 @@ limitations under the License.
 
 using namespace std;
 
-benchmarkResult hammingBenchmark_64(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_64_m1(size_t nvec, size_t words);
 
-benchmarkResult hammingBenchmark_32(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_32_m1(size_t nvec, size_t words);
 
-benchmarkResult hammingBenchmark_16(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_16_m1(size_t nvec, size_t words);
 
-benchmarkResult hammingBenchmark_8(size_t nvec, size_t words);
+benchmarkResult hammingBenchmark_8_m1(size_t nvec, size_t words);

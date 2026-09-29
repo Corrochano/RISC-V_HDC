@@ -20,11 +20,11 @@ limitations under the License.
 
 using namespace std;
 
-void bindComparation(size_t nvec, size_t words){
-    benchmarkResult bind_64 = bindingBenchmark_64(nvec, words);
-    benchmarkResult bind_32 = bindingBenchmark_32(nvec, words);
-    benchmarkResult bind_16 = bindingBenchmark_16(nvec, words);
-    benchmarkResult bind_8 = bindingBenchmark_8(nvec, words);
+void bindComparation_m1(size_t nvec, size_t words){
+    benchmarkResult bind_64 = bindingBenchmark_64_m1(nvec, words);
+    benchmarkResult bind_32 = bindingBenchmark_32_m1(nvec, words);
+    benchmarkResult bind_16 = bindingBenchmark_16_m1(nvec, words);
+    benchmarkResult bind_8 = bindingBenchmark_8_m1(nvec, words);
 
     double speedup_32 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_32.gbs) : 0.0;
     double speedup_16 = (bind_64.gbs > 0) ? (bind_64.gbs / bind_16.gbs) : 0.0;
@@ -50,11 +50,11 @@ void bindComparation(size_t nvec, size_t words){
     
 }
 
-void hammerComparation(size_t nvec, size_t words){
-    benchmarkResult hammer_64 = hammingBenchmark_64(nvec, words);
-    benchmarkResult hammer_32 = hammingBenchmark_32(nvec, words);
-    benchmarkResult hammer_16 = hammingBenchmark_16(nvec, words);
-    benchmarkResult hammer_8 = hammingBenchmark_8(nvec, words);
+void hammerComparation_m1(size_t nvec, size_t words){
+    benchmarkResult hammer_64 = hammingBenchmark_64_m1(nvec, words);
+    benchmarkResult hammer_32 = hammingBenchmark_32_m1(nvec, words);
+    benchmarkResult hammer_16 = hammingBenchmark_16_m1(nvec, words);
+    benchmarkResult hammer_8 = hammingBenchmark_8_m1(nvec, words);
 
     double speedup_32 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_32.gbs) : 0.0;
     double speedup_16 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_16.gbs) : 0.0;
@@ -79,11 +79,11 @@ void hammerComparation(size_t nvec, size_t words){
     }    
 }
 
-void queryComparation(size_t nvec, size_t words){
-    benchmarkResult query_64 = queryBenchmark_64(nvec, words);
-    benchmarkResult query_32 = queryBenchmark_32(nvec, words);
-    benchmarkResult query_16 = queryBenchmark_16(nvec, words);
-    benchmarkResult query_8 = queryBenchmark_8(nvec, words);
+void queryComparation_m1(size_t nvec, size_t words){
+    benchmarkResult query_64 = queryBenchmark_64_m1(nvec, words);
+    benchmarkResult query_32 = queryBenchmark_32_m1(nvec, words);
+    benchmarkResult query_16 = queryBenchmark_16_m1(nvec, words);
+    benchmarkResult query_8 = queryBenchmark_8_m1(nvec, words);
 
     double speedup_32 = (query_64.gbs > 0) ? (query_64.gbs / query_32.gbs) : 0.0;
     double speedup_16 = (query_64.gbs > 0) ? (query_64.gbs / query_16.gbs) : 0.0;
@@ -113,18 +113,18 @@ int main(int argc, char* argv[]) {
         printf("Usage: %s <nvec> <words>\n", argv[0]);
         return 1;
     }
-
+    
     size_t nvec = stoull(argv[1]);
     size_t words = stoull(argv[2]);   
 
     printf("Comparing Bind benchmarks...\n");
-    bindComparation(nvec, words);
+    bindComparation_m1(nvec, words);
 
     printf("\nComparing Hammer benchmarks...\n");
-    hammerComparation(nvec, words);
+    hammerComparation_m1(nvec, words);
 
     printf("\nComparing Query benchmarks...\n");
-    queryComparation(nvec, words);
+    queryComparation_m1(nvec, words);
 
     return 0;
 }
