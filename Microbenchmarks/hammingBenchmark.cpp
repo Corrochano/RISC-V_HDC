@@ -330,7 +330,7 @@ benchmarkResult hammingBenchmark_8_m1(size_t nvec, size_t words) {
     printf("Warming up...\n");
     for (size_t i = 0; i < nvec; ++i) {
         scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
-        hdc_hamming(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+        hdc_hamming_m1(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
     }
 
     printf("Start vectorized\n");
@@ -338,7 +338,7 @@ benchmarkResult hammingBenchmark_8_m1(size_t nvec, size_t words) {
     
     for (size_t i = 0; i < nvec; ++i) {
         scores[i] = 0;
-        hdc_hamming(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+        hdc_hamming_m1(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
     }
     
     auto end = chrono::high_resolution_clock::now();
