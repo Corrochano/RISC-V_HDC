@@ -20,7 +20,7 @@ limitations under the License.
 
 using namespace std;
 
-void bindComparation_m1(size_t nvec, size_t words){
+void bindComparation(size_t nvec, size_t words){
     benchmarkResult bind_64 = bindingBenchmark_64_m1(nvec, words);
     benchmarkResult bind_32 = bindingBenchmark_32_m1(nvec, words);
     benchmarkResult bind_16 = bindingBenchmark_16_m1(nvec, words);
@@ -119,7 +119,7 @@ void bindComparation_m1(size_t nvec, size_t words){
     
 }
 
-void hammerComparation_m1(size_t nvec, size_t words){
+void hammerComparation(size_t nvec, size_t words){
     benchmarkResult hammer_64 = hammingBenchmark_64_m1(nvec, words);
     benchmarkResult hammer_32 = hammingBenchmark_32_m1(nvec, words);
     benchmarkResult hammer_16 = hammingBenchmark_16_m1(nvec, words);
@@ -145,10 +145,90 @@ void hammerComparation_m1(size_t nvec, size_t words){
         output_file << "----------------------------------------------------------------------------------------\n";
         
         output_file.close();
-    }    
+    } 
+    
+    hammer_64 = hammingBenchmark_64_m2(nvec, words);
+    hammer_32 = hammingBenchmark_32_m2(nvec, words);
+    hammer_16 = hammingBenchmark_16_m2(nvec, words);
+    hammer_8 = hammingBenchmark_8_m2(nvec, words);
+
+    speedup_32 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_32.gbs) : 0.0;
+    speedup_16 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_16.gbs) : 0.0;
+    speedup_8 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_8.gbs) : 0.0;
+
+    printf("Speedup of Hammer 32-bit vs 64-bit: %f\n", speedup_32);
+    printf("Speedup of Hammer 16-bit vs 64-bit: %f\n", speedup_16);
+    printf("Speedup of Hammer 8-bit vs 64-bit: %f\n", speedup_8);
+
+    ofstream output_file("hamming_speedups_m2.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "nvec: " << nvec << "\n";
+        output_file << "Words: " << words << "\n";
+        output_file << "Speedup of Hammer 32-bit vs 64-bit: " << speedup_32 << "\n";
+        output_file << "Speedup of Hammer 16-bit vs 64-bit: " << speedup_16 << "\n";
+        output_file << "Speedup of Hammer 8-bit vs 64-bit: " << speedup_8 << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }     
+
+    hammer_64 = hammingBenchmark_64_m4(nvec, words);
+    hammer_32 = hammingBenchmark_32_m4(nvec, words);
+    hammer_16 = hammingBenchmark_16_m4(nvec, words);
+    hammer_8 = hammingBenchmark_8_m4(nvec, words);
+
+    speedup_32 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_32.gbs) : 0.0;
+    speedup_16 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_16.gbs) : 0.0;
+    speedup_8 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_8.gbs) : 0.0;
+
+    printf("Speedup of Hammer 32-bit vs 64-bit: %f\n", speedup_32);
+    printf("Speedup of Hammer 16-bit vs 64-bit: %f\n", speedup_16);
+    printf("Speedup of Hammer 8-bit vs 64-bit: %f\n", speedup_8);
+
+    ofstream output_file("hamming_speedups_m4.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "nvec: " << nvec << "\n";
+        output_file << "Words: " << words << "\n";
+        output_file << "Speedup of Hammer 32-bit vs 64-bit: " << speedup_32 << "\n";
+        output_file << "Speedup of Hammer 16-bit vs 64-bit: " << speedup_16 << "\n";
+        output_file << "Speedup of Hammer 8-bit vs 64-bit: " << speedup_8 << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }     
+    hammer_64 = hammingBenchmark_64_m8(nvec, words);
+    hammer_32 = hammingBenchmark_32_m8(nvec, words);
+    hammer_16 = hammingBenchmark_16_m8(nvec, words);
+    hammer_8 = hammingBenchmark_8_m8(nvec, words);
+
+    speedup_32 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_32.gbs) : 0.0;
+    speedup_16 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_16.gbs) : 0.0;
+    speedup_8 = (hammer_64.gbs > 0) ? (hammer_64.gbs / hammer_8.gbs) : 0.0;
+
+    printf("Speedup of Hammer 32-bit vs 64-bit: %f\n", speedup_32);
+    printf("Speedup of Hammer 16-bit vs 64-bit: %f\n", speedup_16);
+    printf("Speedup of Hammer 8-bit vs 64-bit: %f\n", speedup_8);
+
+    ofstream output_file("hamming_speedups_m8.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "nvec: " << nvec << "\n";
+        output_file << "Words: " << words << "\n";
+        output_file << "Speedup of Hammer 32-bit vs 64-bit: " << speedup_32 << "\n";
+        output_file << "Speedup of Hammer 16-bit vs 64-bit: " << speedup_16 << "\n";
+        output_file << "Speedup of Hammer 8-bit vs 64-bit: " << speedup_8 << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }     
 }
 
-void queryComparation_m1(size_t nvec, size_t words){
+void queryComparation(size_t nvec, size_t words){
     benchmarkResult query_64 = queryBenchmark_64_m1(nvec, words);
     benchmarkResult query_32 = queryBenchmark_32_m1(nvec, words);
     benchmarkResult query_16 = queryBenchmark_16_m1(nvec, words);
@@ -175,6 +255,88 @@ void queryComparation_m1(size_t nvec, size_t words){
         
         output_file.close();
     }
+
+    query_64 = queryBenchmark_64_m2(nvec, words);
+    query_32 = queryBenchmark_32_m2(nvec, words);
+    query_16 = queryBenchmark_16_m2(nvec, words);
+    query_8 = queryBenchmark_8_m2(nvec, words);
+
+    speedup_32 = (query_64.gbs > 0) ? (query_64.gbs / query_32.gbs) : 0.0;
+    speedup_16 = (query_64.gbs > 0) ? (query_64.gbs / query_16.gbs) : 0.0;
+    speedup_8 = (query_64.gbs > 0) ? (query_64.gbs / query_8.gbs) : 0.0;
+
+    printf("Speedup of Query 32-bit vs 64-bit: %f\n", speedup_32);
+    printf("Speedup of Query 16-bit vs 64-bit: %f\n", speedup_16);
+    printf("Speedup of Query 8-bit vs 64-bit: %f\n", speedup_8);
+
+    ofstream output_file("query_speedups_m2.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "nvec: " << nvec << "\n";
+        output_file << "Words: " << words << "\n";
+        output_file << "Speedup of Query 32-bit vs 64-bit: " << speedup_32 << "\n";
+        output_file << "Speedup of Query 16-bit vs 64-bit: " << speedup_16 << "\n";
+        output_file << "Speedup of Query 8-bit vs 64-bit: " << speedup_8 << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }    
+
+    query_64 = queryBenchmark_64_m8(nvec, words);
+    query_32 = queryBenchmark_32_m8(nvec, words);
+    query_16 = queryBenchmark_16_m8(nvec, words);
+    query_8 = queryBenchmark_8_m8(nvec, words);
+
+    speedup_32 = (query_64.gbs > 0) ? (query_64.gbs / query_32.gbs) : 0.0;
+    speedup_16 = (query_64.gbs > 0) ? (query_64.gbs / query_16.gbs) : 0.0;
+    speedup_8 = (query_64.gbs > 0) ? (query_64.gbs / query_8.gbs) : 0.0;
+
+    printf("Speedup of Query 32-bit vs 64-bit: %f\n", speedup_32);
+    printf("Speedup of Query 16-bit vs 64-bit: %f\n", speedup_16);
+    printf("Speedup of Query 8-bit vs 64-bit: %f\n", speedup_8);
+
+    ofstream output_file("query_speedups_m8.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "nvec: " << nvec << "\n";
+        output_file << "Words: " << words << "\n";
+        output_file << "Speedup of Query 32-bit vs 64-bit: " << speedup_32 << "\n";
+        output_file << "Speedup of Query 16-bit vs 64-bit: " << speedup_16 << "\n";
+        output_file << "Speedup of Query 8-bit vs 64-bit: " << speedup_8 << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }    
+
+    query_64 = queryBenchmark_64_m2(nvec, words);
+    query_32 = queryBenchmark_32_m2(nvec, words);
+    query_16 = queryBenchmark_16_m2(nvec, words);
+    query_8 = queryBenchmark_8_m2(nvec, words);
+
+    speedup_32 = (query_64.gbs > 0) ? (query_64.gbs / query_32.gbs) : 0.0;
+    speedup_16 = (query_64.gbs > 0) ? (query_64.gbs / query_16.gbs) : 0.0;
+    speedup_8 = (query_64.gbs > 0) ? (query_64.gbs / query_8.gbs) : 0.0;
+
+    printf("Speedup of Query 32-bit vs 64-bit: %f\n", speedup_32);
+    printf("Speedup of Query 16-bit vs 64-bit: %f\n", speedup_16);
+    printf("Speedup of Query 8-bit vs 64-bit: %f\n", speedup_8);
+
+    ofstream output_file("query_speedups_m2.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "nvec: " << nvec << "\n";
+        output_file << "Words: " << words << "\n";
+        output_file << "Speedup of Query 32-bit vs 64-bit: " << speedup_32 << "\n";
+        output_file << "Speedup of Query 16-bit vs 64-bit: " << speedup_16 << "\n";
+        output_file << "Speedup of Query 8-bit vs 64-bit: " << speedup_8 << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }        
+    
 }
 
 int main(int argc, char* argv[]) {
@@ -187,13 +349,13 @@ int main(int argc, char* argv[]) {
     size_t words = stoull(argv[2]);
 
     printf("Comparing Bind benchmarks...\n");
-    bindComparation_m1(nvec, words);
+    bindComparation(nvec, words);
 
     printf("\nComparing Hammer benchmarks...\n");
-    hammerComparation_m1(nvec, words);
+    hammerComparation(nvec, words);
 
     printf("\nComparing Query benchmarks...\n");
-    queryComparation_m1(nvec, words);
+    queryComparation(nvec, words);
 
     return 0;
 }
