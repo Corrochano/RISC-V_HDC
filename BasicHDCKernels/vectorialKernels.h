@@ -17,29 +17,33 @@ limitations under the License.
 
 #include "typeDefine.h"
 
+////////////////////////////////////////////////////////////////////////////////////////
+//                                      LMUL = 1                                      //
+////////////////////////////////////////////////////////////////////////////////////////
+
 //////////////////
 // Bind Section //
 //////////////////
 
-void hdc_bind(
+void hdc_bind_m1(
     const hdc_word_t *x,
     const hdc_word_t *y,
     hdc_word_t *z,
     size_t words);
 
-void hdc_bind(
+void hdc_bind_m1(
     const hdc_word_t_32 *x,
     const hdc_word_t_32 *y,
     hdc_word_t_32 *z,
     size_t words);
 
-void hdc_bind(
+void hdc_bind_m1(
     const hdc_word_t_16 *x,
     const hdc_word_t_16 *y,
     hdc_word_t_16 *z,
     size_t words);
 
-void hdc_bind(
+void hdc_bind_m1(
     const hdc_word_t_8 *x,
     const hdc_word_t_8 *y,
     hdc_word_t_8 *z,
@@ -49,7 +53,7 @@ void hdc_bind(
 // Hamming Section //
 /////////////////////
 
-void hdc_hamming(
+void hdc_hamming_m1(
     const hdc_word_t *x,
     const hdc_word_t *y,
     hdc_score_t *acc,
@@ -57,7 +61,7 @@ void hdc_hamming(
     size_t alignment, 
     size_t alloc_size);
 
-void hdc_hamming(
+void hdc_hamming_m1(
     const hdc_word_t_32 *x,
     const hdc_word_t_32 *y,
     hdc_score_t_32 *acc,
@@ -65,7 +69,7 @@ void hdc_hamming(
     size_t alignment, 
     size_t alloc_size);
 
-void hdc_hamming(
+void hdc_hamming_m1(
     const hdc_word_t_16 *x,
     const hdc_word_t_16 *y,
     hdc_score_t_16 *acc,
@@ -73,7 +77,7 @@ void hdc_hamming(
     size_t alignment, 
     size_t alloc_size);
 
-void hdc_hamming(
+void hdc_hamming_m1(
     const hdc_word_t_8 *x,
     const hdc_word_t_8 *y,
     hdc_score_t_8 *acc,
@@ -85,7 +89,7 @@ void hdc_hamming(
 // Query Section //
 ///////////////////
 
-void hdc_query(
+void hdc_query_m1(
     const hdc_word_t *M,
     const hdc_word_t *q,
     hdc_score_t *scores,
@@ -94,7 +98,7 @@ void hdc_query(
     size_t alignment, 
     size_t alloc_size);
 
-void hdc_query(
+void hdc_query_m1(
     const hdc_word_t_32 *M,
     const hdc_word_t_32 *q,
     hdc_score_t_32 *scores,
@@ -103,7 +107,7 @@ void hdc_query(
     size_t alignment, 
     size_t alloc_size);
 
-void hdc_query(
+void hdc_query_m1(
     const hdc_word_t_16 *M,
     const hdc_word_t_16 *q,
     hdc_score_t_16 *scores,
@@ -112,7 +116,331 @@ void hdc_query(
     size_t alignment, 
     size_t alloc_size);
 
-void hdc_query(
+void hdc_query_m1(
+    const hdc_word_t_8 *M,
+    const hdc_word_t_8 *q,
+    hdc_score_t_8 *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+////////////////////////////////////////////////////////////////////////////////////////
+//                                      LMUL = 2                                      //
+////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////
+// Bind Section //
+//////////////////
+    
+void hdc_bind_m2(
+    const hdc_word_t *x,
+    const hdc_word_t *y,
+    hdc_word_t *z,
+    size_t words);
+
+void hdc_bind_m2(
+    const hdc_word_t_32 *x,
+    const hdc_word_t_32 *y,
+    hdc_word_t_32 *z,
+    size_t words);
+
+void hdc_bind_m2(
+    const hdc_word_t_16 *x,
+    const hdc_word_t_16 *y,
+    hdc_word_t_16 *z,
+    size_t words);
+
+void hdc_bind_m2(
+    const hdc_word_t_8 *x,
+    const hdc_word_t_8 *y,
+    hdc_word_t_8 *z,
+    size_t words);
+
+/////////////////////
+// Hamming Section //
+/////////////////////
+
+void hdc_hamming_m2(
+    const hdc_word_t *x,
+    const hdc_word_t *y,
+    hdc_score_t *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_hamming_m2(
+    const hdc_word_t_32 *x,
+    const hdc_word_t_32 *y,
+    hdc_score_t_32 *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_hamming_m2(
+    const hdc_word_t_16 *x,
+    const hdc_word_t_16 *y,
+    hdc_score_t_16 *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_hamming_m2(
+    const hdc_word_t_8 *x,
+    const hdc_word_t_8 *y,
+    hdc_score_t_8 *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+///////////////////
+// Query Section //
+///////////////////
+
+void hdc_query_m2(
+    const hdc_word_t *M,
+    const hdc_word_t *q,
+    hdc_score_t *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_query_m2(
+    const hdc_word_t_32 *M,
+    const hdc_word_t_32 *q,
+    hdc_score_t_32 *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_query_m2(
+    const hdc_word_t_16 *M,
+    const hdc_word_t_16 *q,
+    hdc_score_t_16 *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_query_m2(
+    const hdc_word_t_8 *M,
+    const hdc_word_t_8 *q,
+    hdc_score_t_8 *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);    
+
+////////////////////////////////////////////////////////////////////////////////////////
+//                                      LMUL = 4                                      //
+////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////
+// Bind Section //
+//////////////////
+
+void hdc_bind_m4(
+    const hdc_word_t *x,
+    const hdc_word_t *y,
+    hdc_word_t *z,
+    size_t words);
+
+void hdc_bind_m4(
+    const hdc_word_t_32 *x,
+    const hdc_word_t_32 *y,
+    hdc_word_t_32 *z,
+    size_t words);
+
+void hdc_bind_m4(
+    const hdc_word_t_16 *x,
+    const hdc_word_t_16 *y,
+    hdc_word_t_16 *z,
+    size_t words);
+
+void hdc_bind_m4(
+    const hdc_word_t_8 *x,
+    const hdc_word_t_8 *y,
+    hdc_word_t_8 *z,
+    size_t words);
+
+/////////////////////
+// Hamming Section //
+/////////////////////
+
+void hdc_hamming_m4(
+    const hdc_word_t *x,
+    const hdc_word_t *y,
+    hdc_score_t *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_hamming_m4(
+    const hdc_word_t_32 *x,
+    const hdc_word_t_32 *y,
+    hdc_score_t_32 *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_hamming_m4(
+    const hdc_word_t_16 *x,
+    const hdc_word_t_16 *y,
+    hdc_score_t_16 *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_hamming_m4(
+    const hdc_word_t_8 *x,
+    const hdc_word_t_8 *y,
+    hdc_score_t_8 *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+///////////////////
+// Query Section //
+///////////////////
+
+void hdc_query_m4(
+    const hdc_word_t *M,
+    const hdc_word_t *q,
+    hdc_score_t *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_query_m4(
+    const hdc_word_t_32 *M,
+    const hdc_word_t_32 *q,
+    hdc_score_t_32 *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_query_m4(
+    const hdc_word_t_16 *M,
+    const hdc_word_t_16 *q,
+    hdc_score_t_16 *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_query_m4(
+    const hdc_word_t_8 *M,
+    const hdc_word_t_8 *q,
+    hdc_score_t_8 *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+////////////////////////////////////////////////////////////////////////////////////////
+//                                      LMUL = 8                                      //
+////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////
+// Bind Section //
+//////////////////
+
+void hdc_bind_m8(
+    const hdc_word_t *x,
+    const hdc_word_t *y,
+    hdc_word_t *z,
+    size_t words);
+
+void hdc_bind_m8(
+    const hdc_word_t_32 *x,
+    const hdc_word_t_32 *y,
+    hdc_word_t_32 *z,
+    size_t words);
+
+void hdc_bind_m8(
+    const hdc_word_t_16 *x,
+    const hdc_word_t_16 *y,
+    hdc_word_t_16 *z,
+    size_t words);
+
+void hdc_bind_m8(
+    const hdc_word_t_8 *x,
+    const hdc_word_t_8 *y,
+    hdc_word_t_8 *z,
+    size_t words);
+
+/////////////////////
+// Hamming Section //
+/////////////////////
+
+void hdc_hamming_m8(
+    const hdc_word_t *x,
+    const hdc_word_t *y,
+    hdc_score_t *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_hamming_m8(
+    const hdc_word_t_32 *x,
+    const hdc_word_t_32 *y,
+    hdc_score_t_32 *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_hamming_m8(
+    const hdc_word_t_16 *x,
+    const hdc_word_t_16 *y,
+    hdc_score_t_16 *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_hamming_m8(
+    const hdc_word_t_8 *x,
+    const hdc_word_t_8 *y,
+    hdc_score_t_8 *acc,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+///////////////////
+// Query Section //
+///////////////////
+
+void hdc_query_m8(
+    const hdc_word_t *M,
+    const hdc_word_t *q,
+    hdc_score_t *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_query_m8(
+    const hdc_word_t_32 *M,
+    const hdc_word_t_32 *q,
+    hdc_score_t_32 *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_query_m8(
+    const hdc_word_t_16 *M,
+    const hdc_word_t_16 *q,
+    hdc_score_t_16 *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment, 
+    size_t alloc_size);
+
+void hdc_query_m8(
     const hdc_word_t_8 *M,
     const hdc_word_t_8 *q,
     hdc_score_t_8 *scores,
