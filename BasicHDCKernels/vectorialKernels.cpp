@@ -144,7 +144,7 @@ void hdc_hamming_m1(
     hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
     //vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
 
-    hdc_bind(x,y,z,words); // Perform XOR
+    hdc_bind_m1(x,y,z,words); // Perform XOR
 
     size_t i = 0;
     while (i < words){
@@ -441,7 +441,7 @@ void hdc_hamming_m2(
     hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
     //vuint64m2_t vz = __riscv_vle64_v_u64m2(z, vl); // Need it as a vector
 
-    hdc_bind(x,y,z,words); // Perform XOR
+    hdc_bind_m2(x,y,z,words); // Perform XOR
 
     size_t i = 0;
     while (i < words){
