@@ -17,6 +17,10 @@ limitations under the License.
 
 using namespace std;
 
+////////////////////////////////////////////////////////////////////////////////////////
+//                                      LMUL = 1                                      //
+////////////////////////////////////////////////////////////////////////////////////////
+
 benchmarkResult hammingBenchmark_64_m1(size_t nvec, size_t words) {
 
     benchmarkResult results;
@@ -41,7 +45,7 @@ benchmarkResult hammingBenchmark_64_m1(size_t nvec, size_t words) {
     printf("Warming up...\n");
     for (size_t i = 0; i < nvec; ++i) {
         scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
-        hdc_hamming(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+        hdc_hamming_m1(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
     }
 
     printf("Start vectorized\n");
@@ -49,7 +53,7 @@ benchmarkResult hammingBenchmark_64_m1(size_t nvec, size_t words) {
     
     for (size_t i = 0; i < nvec; ++i) {
         scores[i] = 0;
-        hdc_hamming(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+        hdc_hamming_m1(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
     }
     
     auto end = chrono::high_resolution_clock::now();
@@ -136,7 +140,7 @@ benchmarkResult hammingBenchmark_32_m1(size_t nvec, size_t words) {
     printf("Warming up...\n");
     for (size_t i = 0; i < nvec; ++i) {
         scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
-        hdc_hamming(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+        hdc_hamming_m1(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
     }
 
     printf("Start vectorized\n");
@@ -144,7 +148,7 @@ benchmarkResult hammingBenchmark_32_m1(size_t nvec, size_t words) {
     
     for (size_t i = 0; i < nvec; ++i) {
         scores[i] = 0;
-        hdc_hamming(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+        hdc_hamming_m1(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
     }
     
     auto end = chrono::high_resolution_clock::now();
@@ -231,7 +235,7 @@ benchmarkResult hammingBenchmark_16_m1(size_t nvec, size_t words) {
     printf("Warming up...\n");
     for (size_t i = 0; i < nvec; ++i) {
         scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
-        hdc_hamming(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+        hdc_hamming_m1(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
     }
 
     printf("Start vectorized\n");
@@ -239,7 +243,7 @@ benchmarkResult hammingBenchmark_16_m1(size_t nvec, size_t words) {
     
     for (size_t i = 0; i < nvec; ++i) {
         scores[i] = 0;
-        hdc_hamming(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+        hdc_hamming_m1(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
     }
     
     auto end = chrono::high_resolution_clock::now();
@@ -326,7 +330,7 @@ benchmarkResult hammingBenchmark_8_m1(size_t nvec, size_t words) {
     printf("Warming up...\n");
     for (size_t i = 0; i < nvec; ++i) {
         scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
-        hdc_hamming(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+        hdc_hamming_m1(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
     }
 
     printf("Start vectorized\n");
@@ -334,7 +338,7 @@ benchmarkResult hammingBenchmark_8_m1(size_t nvec, size_t words) {
     
     for (size_t i = 0; i < nvec; ++i) {
         scores[i] = 0;
-        hdc_hamming(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+        hdc_hamming_m1(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
     }
     
     auto end = chrono::high_resolution_clock::now();
@@ -396,3 +400,1157 @@ benchmarkResult hammingBenchmark_8_m1(size_t nvec, size_t words) {
 
     return results;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////
+//                                      LMUL = 2                                      //
+////////////////////////////////////////////////////////////////////////////////////////
+
+benchmarkResult hammingBenchmark_64_m2(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t* M = (hdc_word_t*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t* q = (hdc_word_t*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t* scores = (hdc_score_t*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t)) + (double)(nvec * words * sizeof(hdc_word_t));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m2(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m2(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_64_m2.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+benchmarkResult hammingBenchmark_32_m2(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t_32) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_32) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t_32* M = (hdc_word_t_32*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t_32* q = (hdc_word_t_32*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t_32* scores = (hdc_score_t_32*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t_32));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t_32)) + (double)(nvec * words * sizeof(hdc_word_t_32));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t_32));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m2(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m2(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_32_m2.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+benchmarkResult hammingBenchmark_16_m2(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t_16) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_16) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t_16* M = (hdc_word_t_16*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t_16* q = (hdc_word_t_16*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t_16* scores = (hdc_score_t_16*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t_16));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t_16)) + (double)(nvec * words * sizeof(hdc_word_t_16));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t_16));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m2(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m2(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_16_m2.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+benchmarkResult hammingBenchmark_8_m2(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t_8) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_8) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t_8* M = (hdc_word_t_8*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t_8* q = (hdc_word_t_8*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t_8* scores = (hdc_score_t_8*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t_8));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t_8)) + (double)(nvec * words * sizeof(hdc_word_t_8));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t_8));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m2(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m2(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_8_m2.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//                                      LMUL = 4                                      //
+////////////////////////////////////////////////////////////////////////////////////////
+
+benchmarkResult hammingBenchmark_64_m4(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t* M = (hdc_word_t*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t* q = (hdc_word_t*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t* scores = (hdc_score_t*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t)) + (double)(nvec * words * sizeof(hdc_word_t));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m4(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m4(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_64_m4.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+benchmarkResult hammingBenchmark_32_m4(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t_32) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_32) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t_32* M = (hdc_word_t_32*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t_32* q = (hdc_word_t_32*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t_32* scores = (hdc_score_t_32*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t_32));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t_32)) + (double)(nvec * words * sizeof(hdc_word_t_32));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t_32));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m4(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m4(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_32_m4.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+benchmarkResult hammingBenchmark_16_m4(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t_16) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_16) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t_16* M = (hdc_word_t_16*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t_16* q = (hdc_word_t_16*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t_16* scores = (hdc_score_t_16*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t_16));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t_16)) + (double)(nvec * words * sizeof(hdc_word_t_16));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t_16));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m4(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m4(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_16_m4.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+benchmarkResult hammingBenchmark_8_m4(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t_8) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_8) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t_8* M = (hdc_word_t_8*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t_8* q = (hdc_word_t_8*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t_8* scores = (hdc_score_t_8*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t_8));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t_8)) + (double)(nvec * words * sizeof(hdc_word_t_8));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t_8));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m4(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m4(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_8_m4.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+//                                      LMUL = 8                                      //
+////////////////////////////////////////////////////////////////////////////////////////
+
+benchmarkResult hammingBenchmark_64_m8(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t* M = (hdc_word_t*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t* q = (hdc_word_t*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t* scores = (hdc_score_t*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t)) + (double)(nvec * words * sizeof(hdc_word_t));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m8(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m8(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_64_m8.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+benchmarkResult hammingBenchmark_32_m8(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t_32) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_32) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t_32* M = (hdc_word_t_32*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t_32* q = (hdc_word_t_32*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t_32* scores = (hdc_score_t_32*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t_32));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t_32)) + (double)(nvec * words * sizeof(hdc_word_t_32));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t_32));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m8(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m8(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_32_m8.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+benchmarkResult hammingBenchmark_16_m8(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t_16) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_16) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t_16* M = (hdc_word_t_16*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t_16* q = (hdc_word_t_16*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t_16* scores = (hdc_score_t_16*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t_16));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t_16)) + (double)(nvec * words * sizeof(hdc_word_t_16));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t_16));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m8(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m8(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_16_m8.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
+benchmarkResult hammingBenchmark_8_m8(size_t nvec, size_t words) {
+
+    benchmarkResult results;
+
+    size_t alloc_size = ((words * sizeof(hdc_word_t_8) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+    size_t matrix_words = nvec * words;
+    size_t matrix_alloc_size = ((matrix_words * sizeof(hdc_word_t_8) + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+
+    hdc_word_t_8* M = (hdc_word_t_8*)aligned_alloc(ALIGNMENT, matrix_alloc_size); 
+    hdc_word_t_8* q = (hdc_word_t_8*)aligned_alloc(ALIGNMENT, alloc_size);
+    hdc_score_t_8* scores = (hdc_score_t_8*)aligned_alloc(ALIGNMENT, nvec * sizeof(hdc_score_t_8));
+
+    printf("Create vectors\n");
+
+    randomize_hdc_vector(M, matrix_words);
+    randomize_hdc_vector(q, words);
+
+    double bytes_read = (double)(nvec * words * sizeof(hdc_word_t_8)) + (double)(nvec * words * sizeof(hdc_word_t_8));
+    double bytes_written = (double)(nvec * sizeof(hdc_score_t_8));
+    double total_gigabytes = (bytes_read + bytes_written) / (1024.0 * 1024.0 * 1024.0);
+
+    printf("Warming up...\n");
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0; // Explicitly reset accumulator to prevent garbage values
+        hdc_hamming_m8(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+
+    printf("Start vectorized\n");
+    auto start = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        hdc_hamming_m8(&M[i * words], q, &scores[i], words, ALIGNMENT, alloc_size);
+    }
+    
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    double seconds = duration.count();
+
+    double gbs = (seconds > 0) ? (total_gigabytes / seconds) : 0.0;
+
+    printf("Start scalar\n");
+    auto sstart = chrono::high_resolution_clock::now();
+    
+    for (size_t i = 0; i < nvec; ++i) {
+        scores[i] = 0;
+        scalar_hamming(&M[i * words], q, &scores[i], words);
+    }
+    
+    auto send = chrono::high_resolution_clock::now();
+    chrono::duration<double> sduration = send - sstart;
+    double sseconds = sduration.count();
+
+    double sgbs = (sseconds > 0) ? (total_gigabytes / sseconds) : 0.0;
+
+    double speedup = (seconds > 0) ? (sseconds / seconds) : 0.0;
+
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Vectorized results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, seconds, gbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Scalar results (Hamming):\n");
+    printf("%lu vects, %lu words, %f s, %f gb/s\n", nvec, words, sseconds, sgbs);
+    printf("----------------------------------------------------------------------------------------\n");
+    printf("Speedup: %f\n", speedup);
+    printf("----------------------------------------------------------------------------------------\n");
+
+    ofstream output_file("hamming_benchmark_8_m8.txt", ios::app);
+
+    if (output_file.is_open()) {
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Vectorized results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << seconds << " s, " << gbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Scalar results (Hamming):\n";
+        output_file << nvec << " vects, " << words << " words, " << sseconds << " s, " << sgbs << " gb/s\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        output_file << "Speedup: " << speedup << "\n";
+        output_file << "----------------------------------------------------------------------------------------\n";
+        
+        output_file.close();
+    }
+
+    free(M);
+    free(q);
+    free(scores);
+
+    results.seconds = seconds;
+    results.gbs = gbs;
+    results.sseconds = sseconds;
+    results.sgbs = sgbs;
+
+    return results;
+}
+
