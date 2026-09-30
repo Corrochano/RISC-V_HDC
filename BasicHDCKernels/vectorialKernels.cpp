@@ -17,6 +17,148 @@ limitations under the License.
 
 using namespace std;
 
+template <typename WordT, typename ScoreT>
+void hdc_query_impl(
+    const WordT *M,
+    const WordT *q,
+    ScoreT *scores,
+    size_t nvec,
+    size_t words,
+    size_t alignment,
+    size_t alloc_size,
+    void (*hamming)(const WordT *, const WordT *, ScoreT *, size_t, size_t, size_t))
+{
+    size_t i = 0;
+    while (i < nvec) {
+        hamming(&M[i * words], q, &scores[i], words, alignment, alloc_size);
+        i++;
+    }
+}
+
+template <int LMUL, typename WordT>
+struct RvvOps;
+
+#define HDC_DEFINE_RVV_OPS(LMUL, WORD_T, VECTOR_T, MASK_T, GET_VL, LOAD, XOR, STORE, CMP, POPCOUNT) \
+template <> struct RvvOps<LMUL, WORD_T> { \
+    using word_type = WORD_T; \
+    using vector_type = VECTOR_T; \
+    using mask_type = MASK_T; \
+    static size_t vl(size_t remaining) { return GET_VL(remaining, sizeof(WORD_T) * 8); } \
+    static vector_type load(const word_type *src, size_t vl) { return LOAD(src, vl); } \
+    static vector_type bit_xor(vector_type x, vector_type y, size_t vl) { return XOR(x, y, vl); } \
+    static void store(word_type *dst, vector_type value, size_t vl) { STORE(dst, value, vl); } \
+    static mask_type nonzero(vector_type value, size_t vl) { return CMP(value, 0, vl); } \
+    static size_t popcount(mask_type value, size_t vl) { return POPCOUNT(value, vl); } \
+};
+
+HDC_DEFINE_RVV_OPS(
+    1, hdc_word_t, vuint64m1_t, vbool64_t, get_rvv_vl_m1,
+    __riscv_vle64_v_u64m1, __riscv_vxor_vv_u64m1, __riscv_vse64_v_u64m1,
+    __riscv_vmsne_vx_u64m1_b64, __riscv_vcpop_m_b64)
+HDC_DEFINE_RVV_OPS(
+    1, hdc_word_t_32, vuint32m1_t, vbool32_t, get_rvv_vl_m1,
+    __riscv_vle32_v_u32m1, __riscv_vxor_vv_u32m1, __riscv_vse32_v_u32m1,
+    __riscv_vmsne_vx_u32m1_b32, __riscv_vcpop_m_b32)
+HDC_DEFINE_RVV_OPS(
+    1, hdc_word_t_16, vuint16m1_t, vbool16_t, get_rvv_vl_m1,
+    __riscv_vle16_v_u16m1, __riscv_vxor_vv_u16m1, __riscv_vse16_v_u16m1,
+    __riscv_vmsne_vx_u16m1_b16, __riscv_vcpop_m_b16)
+HDC_DEFINE_RVV_OPS(
+    1, hdc_word_t_8, vuint8m1_t, vbool8_t, get_rvv_vl_m1,
+    __riscv_vle8_v_u8m1, __riscv_vxor_vv_u8m1, __riscv_vse8_v_u8m1,
+    __riscv_vmsne_vx_u8m1_b8, __riscv_vcpop_m_b8)
+HDC_DEFINE_RVV_OPS(
+    2, hdc_word_t, vuint64m2_t, vbool32_t, get_rvv_vl_m2,
+    __riscv_vle64_v_u64m2, __riscv_vxor_vv_u64m2, __riscv_vse64_v_u64m2,
+    __riscv_vmsne_vx_u64m2_b32, __riscv_vcpop_m_b32)
+HDC_DEFINE_RVV_OPS(
+    2, hdc_word_t_32, vuint32m2_t, vbool16_t, get_rvv_vl_m2,
+    __riscv_vle32_v_u32m2, __riscv_vxor_vv_u32m2, __riscv_vse32_v_u32m2,
+    __riscv_vmsne_vx_u32m2_b16, __riscv_vcpop_m_b16)
+HDC_DEFINE_RVV_OPS(
+    2, hdc_word_t_16, vuint16m2_t, vbool8_t, get_rvv_vl_m2,
+    __riscv_vle16_v_u16m2, __riscv_vxor_vv_u16m2, __riscv_vse16_v_u16m2,
+    __riscv_vmsne_vx_u16m2_b8, __riscv_vcpop_m_b8)
+HDC_DEFINE_RVV_OPS(
+    2, hdc_word_t_8, vuint8m2_t, vbool4_t, get_rvv_vl_m2,
+    __riscv_vle8_v_u8m2, __riscv_vxor_vv_u8m2, __riscv_vse8_v_u8m2,
+    __riscv_vmsne_vx_u8m2_b4, __riscv_vcpop_m_b4)
+HDC_DEFINE_RVV_OPS(
+    4, hdc_word_t, vuint64m4_t, vbool16_t, get_rvv_vl_m4,
+    __riscv_vle64_v_u64m4, __riscv_vxor_vv_u64m4, __riscv_vse64_v_u64m4,
+    __riscv_vmsne_vx_u64m4_b16, __riscv_vcpop_m_b16)
+HDC_DEFINE_RVV_OPS(
+    4, hdc_word_t_32, vuint32m4_t, vbool8_t, get_rvv_vl_m4,
+    __riscv_vle32_v_u32m4, __riscv_vxor_vv_u32m4, __riscv_vse32_v_u32m4,
+    __riscv_vmsne_vx_u32m4_b8, __riscv_vcpop_m_b8)
+HDC_DEFINE_RVV_OPS(
+    4, hdc_word_t_16, vuint16m4_t, vbool4_t, get_rvv_vl_m4,
+    __riscv_vle16_v_u16m4, __riscv_vxor_vv_u16m4, __riscv_vse16_v_u16m4,
+    __riscv_vmsne_vx_u16m4_b4, __riscv_vcpop_m_b4)
+HDC_DEFINE_RVV_OPS(
+    4, hdc_word_t_8, vuint8m4_t, vbool2_t, get_rvv_vl_m4,
+    __riscv_vle8_v_u8m4, __riscv_vxor_vv_u8m4, __riscv_vse8_v_u8m4,
+    __riscv_vmsne_vx_u8m4_b2, __riscv_vcpop_m_b2)
+HDC_DEFINE_RVV_OPS(
+    8, hdc_word_t, vuint64m8_t, vbool8_t, get_rvv_vl_m8,
+    __riscv_vle64_v_u64m8, __riscv_vxor_vv_u64m8, __riscv_vse64_v_u64m8,
+    __riscv_vmsne_vx_u64m8_b8, __riscv_vcpop_m_b8)
+HDC_DEFINE_RVV_OPS(
+    8, hdc_word_t_32, vuint32m8_t, vbool4_t, get_rvv_vl_m8,
+    __riscv_vle32_v_u32m8, __riscv_vxor_vv_u32m8, __riscv_vse32_v_u32m8,
+    __riscv_vmsne_vx_u32m8_b4, __riscv_vcpop_m_b4)
+HDC_DEFINE_RVV_OPS(
+    8, hdc_word_t_16, vuint16m8_t, vbool2_t, get_rvv_vl_m8,
+    __riscv_vle16_v_u16m8, __riscv_vxor_vv_u16m8, __riscv_vse16_v_u16m8,
+    __riscv_vmsne_vx_u16m8_b2, __riscv_vcpop_m_b2)
+HDC_DEFINE_RVV_OPS(
+    8, hdc_word_t_8, vuint8m8_t, vbool1_t, get_rvv_vl_m8,
+    __riscv_vle8_v_u8m8, __riscv_vxor_vv_u8m8, __riscv_vse8_v_u8m8,
+    __riscv_vmsne_vx_u8m8_b1, __riscv_vcpop_m_b1)
+
+#undef HDC_DEFINE_RVV_OPS
+
+template <typename Ops>
+void hdc_bind_impl(
+    const typename Ops::word_type *x,
+    const typename Ops::word_type *y,
+    typename Ops::word_type *z,
+    size_t words)
+{
+    size_t i = 0;
+    while (i < words) {
+        size_t vl = Ops::vl(words - i);
+        auto vx = Ops::load(&x[i], vl);
+        auto vy = Ops::load(&y[i], vl);
+        Ops::store(&z[i], Ops::bit_xor(vx, vy, vl), vl);
+        i += vl;
+    }
+}
+
+template <typename Ops, typename ScoreT>
+void hdc_hamming_impl(
+    const typename Ops::word_type *x,
+    const typename Ops::word_type *y,
+    ScoreT *acc,
+    size_t words,
+    size_t alignment,
+    size_t alloc_size)
+{
+    using WordT = typename Ops::word_type;
+    WordT *z = static_cast<WordT *>(aligned_alloc(alignment, alloc_size));
+    hdc_bind_impl<Ops>(x, y, z, words);
+
+    size_t i = 0;
+    while (i < words) {
+        size_t vl = Ops::vl(words - i);
+        auto vz = Ops::load(&z[i], vl);
+        *acc += Ops::popcount(Ops::nonzero(vz, vl), vl);
+        i += vl;
+    }
+
+    free(z);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 //                                      LMUL = 1                                      //
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -30,25 +172,8 @@ void hdc_bind_m1(
     const hdc_word_t *y,
     hdc_word_t *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m1(words - i, 64);
-        
-        // Load as vectors
-        vuint64m1_t vx = __riscv_vle64_v_u64m1(&x[i], vl);
-        vuint64m1_t vy = __riscv_vle64_v_u64m1(&y[i], vl);
-
-        // Execute xor
-        vuint64m1_t vz = __riscv_vxor_vv_u64m1(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse64_v_u64m1(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<1, hdc_word_t>>(x, y, z, words);
 }
 
 void hdc_bind_m1(
@@ -56,25 +181,8 @@ void hdc_bind_m1(
     const hdc_word_t_32 *y,
     hdc_word_t_32 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m1(words - i, 32);
-        
-        // Load as vectors
-        vuint32m1_t vx = __riscv_vle32_v_u32m1(&x[i], vl);
-        vuint32m1_t vy = __riscv_vle32_v_u32m1(&y[i], vl);
-
-        // Execute xor
-        vuint32m1_t vz = __riscv_vxor_vv_u32m1(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse32_v_u32m1(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<1, hdc_word_t_32>>(x, y, z, words);
 }
 
 void hdc_bind_m1(
@@ -82,25 +190,8 @@ void hdc_bind_m1(
     const hdc_word_t_16 *y,
     hdc_word_t_16 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m1(words - i, 16);
-        
-        // Load as vectors
-        vuint16m1_t vx = __riscv_vle16_v_u16m1(&x[i], vl);
-        vuint16m1_t vy = __riscv_vle16_v_u16m1(&y[i], vl);
-
-        // Execute xor
-        vuint16m1_t vz = __riscv_vxor_vv_u16m1(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse16_v_u16m1(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<1, hdc_word_t_16>>(x, y, z, words);
 }
 
 void hdc_bind_m1(
@@ -108,25 +199,8 @@ void hdc_bind_m1(
     const hdc_word_t_8 *y,
     hdc_word_t_8 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m1(words - i, 8);
-        
-        // Load as vectors
-        vuint8m1_t vx = __riscv_vle8_v_u8m1(&x[i], vl);
-        vuint8m1_t vy = __riscv_vle8_v_u8m1(&y[i], vl);
-
-        // Execute xor
-        vuint8m1_t vz = __riscv_vxor_vv_u8m1(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse8_v_u8m1(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<1, hdc_word_t_8>>(x, y, z, words);
 }
 
 /////////////////////
@@ -141,24 +215,7 @@ void hdc_hamming_m1(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
-    //vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector
-
-    hdc_bind_m1(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m1(words - i, 64);
-        vuint64m1_t vz = __riscv_vle64_v_u64m1(z, vl); // Need it as a vector    
-        vbool64_t bz = __riscv_vmsne_vx_u64m1_b64(vz, 0, vl); // Need bool argument
-
-        *acc += __riscv_vcpop_m_b64(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<1, hdc_word_t>, hdc_score_t>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m1(
@@ -169,23 +226,7 @@ void hdc_hamming_m1(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_32 *z = (hdc_word_t_32*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m1(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m1(words - i, 32);
-        vuint32m1_t vz = __riscv_vle32_v_u32m1(z, vl); // Need it as a vector    
-        vbool32_t bz = __riscv_vmsne_vx_u32m1_b32(vz, 0, vl); // Need bool argument
-
-        *acc += __riscv_vcpop_m_b32(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<1, hdc_word_t_32>, hdc_score_t_32>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m1(
@@ -196,23 +237,7 @@ void hdc_hamming_m1(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_16 *z = (hdc_word_t_16*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m1(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m1(words - i, 16);
-        vuint16m1_t vz = __riscv_vle16_v_u16m1(z, vl); // Need it as a vector    
-        vbool16_t bz = __riscv_vmsne_vx_u16m1_b16(vz, 0, vl); // Need bool argument
-
-        *acc += __riscv_vcpop_m_b16(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<1, hdc_word_t_16>, hdc_score_t_16>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m1(
@@ -223,23 +248,7 @@ void hdc_hamming_m1(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_8 *z = (hdc_word_t_8*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m1(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m1(words - i, 8);
-        vuint8m1_t vz = __riscv_vle8_v_u8m1(z, vl); // Need it as a vector    
-        vbool8_t bz = __riscv_vmsne_vx_u8m1_b8(vz, 0, vl); // Need bool argument
-
-        *acc += __riscv_vcpop_m_b8(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<1, hdc_word_t_8>, hdc_score_t_8>(x, y, acc, words, alignment, alloc_size);
 }
 
 ///////////////////
@@ -255,12 +264,7 @@ void hdc_query_m1(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m1(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t, hdc_score_t>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m1);
 }
 
 void hdc_query_m1(
@@ -272,12 +276,7 @@ void hdc_query_m1(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m1(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_32, hdc_score_t_32>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m1);
 }
 
 void hdc_query_m1(
@@ -289,12 +288,7 @@ void hdc_query_m1(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m1(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_16, hdc_score_t_16>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m1);
 }
 
 void hdc_query_m1(
@@ -306,12 +300,7 @@ void hdc_query_m1(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m1(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_8, hdc_score_t_8>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -327,25 +316,8 @@ void hdc_bind_m2(
     const hdc_word_t *y,
     hdc_word_t *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m2(words - i, 64);
-        
-        // Load as vectors
-        vuint64m2_t vx = __riscv_vle64_v_u64m2(&x[i], vl);
-        vuint64m2_t vy = __riscv_vle64_v_u64m2(&y[i], vl);
-
-        // Execute xor
-        vuint64m2_t vz = __riscv_vxor_vv_u64m2(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse64_v_u64m2(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<2, hdc_word_t>>(x, y, z, words);
 }
 
 void hdc_bind_m2(
@@ -353,25 +325,8 @@ void hdc_bind_m2(
     const hdc_word_t_32 *y,
     hdc_word_t_32 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m2(words - i, 32);
-        
-        // Load as vectors
-        vuint32m2_t vx = __riscv_vle32_v_u32m2(&x[i], vl);
-        vuint32m2_t vy = __riscv_vle32_v_u32m2(&y[i], vl);
-
-        // Execute xor
-        vuint32m2_t vz = __riscv_vxor_vv_u32m2(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse32_v_u32m2(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<2, hdc_word_t_32>>(x, y, z, words);
 }
 
 void hdc_bind_m2(
@@ -379,25 +334,8 @@ void hdc_bind_m2(
     const hdc_word_t_16 *y,
     hdc_word_t_16 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m2(words - i, 16);
-        
-        // Load as vectors
-        vuint16m2_t vx = __riscv_vle16_v_u16m2(&x[i], vl);
-        vuint16m2_t vy = __riscv_vle16_v_u16m2(&y[i], vl);
-
-        // Execute xor
-        vuint16m2_t vz = __riscv_vxor_vv_u16m2(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse16_v_u16m2(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<2, hdc_word_t_16>>(x, y, z, words);
 }
 
 void hdc_bind_m2(
@@ -405,25 +343,8 @@ void hdc_bind_m2(
     const hdc_word_t_8 *y,
     hdc_word_t_8 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m2(words - i, 8);
-        
-        // Load as vectors
-        vuint8m2_t vx = __riscv_vle8_v_u8m2(&x[i], vl);
-        vuint8m2_t vy = __riscv_vle8_v_u8m2(&y[i], vl);
-
-        // Execute xor
-        vuint8m2_t vz = __riscv_vxor_vv_u8m2(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse8_v_u8m2(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<2, hdc_word_t_8>>(x, y, z, words);
 }
 
 /////////////////////
@@ -438,24 +359,7 @@ void hdc_hamming_m2(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
-    //vuint64m2_t vz = __riscv_vle64_v_u64m2(z, vl); // Need it as a vector
-
-    hdc_bind_m2(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m2(words - i, 64);
-        vuint64m2_t vz = __riscv_vle64_v_u64m2(z, vl); // Need it as a vector    
-        vbool32_t bz = __riscv_vmsne_vx_u64m2_b32(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b32(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<2, hdc_word_t>, hdc_score_t>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m2(
@@ -466,23 +370,7 @@ void hdc_hamming_m2(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_32 *z = (hdc_word_t_32*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m2(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m2(words - i, 32);
-        vuint32m2_t vz = __riscv_vle32_v_u32m2(z, vl); // Need it as a vector    
-        vbool16_t bz = __riscv_vmsne_vx_u32m2_b16(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b16(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<2, hdc_word_t_32>, hdc_score_t_32>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m2(
@@ -493,23 +381,7 @@ void hdc_hamming_m2(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_16 *z = (hdc_word_t_16*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m2(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m2(words - i, 16);
-        vuint16m2_t vz = __riscv_vle16_v_u16m2(z, vl); // Need it as a vector    
-        vbool8_t bz = __riscv_vmsne_vx_u16m2_b8(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b8(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<2, hdc_word_t_16>, hdc_score_t_16>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m2(
@@ -520,23 +392,7 @@ void hdc_hamming_m2(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_8 *z = (hdc_word_t_8*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m2(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m2(words - i, 8);
-        vuint8m2_t vz = __riscv_vle8_v_u8m2(z, vl); // Need it as a vector    
-        vbool4_t bz = __riscv_vmsne_vx_u8m2_b4(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b4(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<2, hdc_word_t_8>, hdc_score_t_8>(x, y, acc, words, alignment, alloc_size);
 }
 
 ///////////////////
@@ -552,12 +408,7 @@ void hdc_query_m2(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m2(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t, hdc_score_t>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m2);
 }
 
 void hdc_query_m2(
@@ -569,12 +420,7 @@ void hdc_query_m2(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m2(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_32, hdc_score_t_32>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m2);
 }
 
 void hdc_query_m2(
@@ -586,12 +432,7 @@ void hdc_query_m2(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m2(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_16, hdc_score_t_16>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m2);
 }
 
 void hdc_query_m2(
@@ -603,12 +444,7 @@ void hdc_query_m2(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m2(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_8, hdc_score_t_8>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -624,25 +460,8 @@ void hdc_bind_m4(
     const hdc_word_t *y,
     hdc_word_t *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m4(words - i, 64);
-        
-        // Load as vectors
-        vuint64m4_t vx = __riscv_vle64_v_u64m4(&x[i], vl);
-        vuint64m4_t vy = __riscv_vle64_v_u64m4(&y[i], vl);
-
-        // Execute xor
-        vuint64m4_t vz = __riscv_vxor_vv_u64m4(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse64_v_u64m4(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<4, hdc_word_t>>(x, y, z, words);
 }
 
 void hdc_bind_m4(
@@ -650,25 +469,8 @@ void hdc_bind_m4(
     const hdc_word_t_32 *y,
     hdc_word_t_32 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m4(words - i, 32);
-        
-        // Load as vectors
-        vuint32m4_t vx = __riscv_vle32_v_u32m4(&x[i], vl);
-        vuint32m4_t vy = __riscv_vle32_v_u32m4(&y[i], vl);
-
-        // Execute xor
-        vuint32m4_t vz = __riscv_vxor_vv_u32m4(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse32_v_u32m4(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<4, hdc_word_t_32>>(x, y, z, words);
 }
 
 void hdc_bind_m4(
@@ -676,25 +478,8 @@ void hdc_bind_m4(
     const hdc_word_t_16 *y,
     hdc_word_t_16 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m4(words - i, 16);
-        
-        // Load as vectors
-        vuint16m4_t vx = __riscv_vle16_v_u16m4(&x[i], vl);
-        vuint16m4_t vy = __riscv_vle16_v_u16m4(&y[i], vl);
-
-        // Execute xor
-        vuint16m4_t vz = __riscv_vxor_vv_u16m4(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse16_v_u16m4(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<4, hdc_word_t_16>>(x, y, z, words);
 }
 
 void hdc_bind_m4(
@@ -702,25 +487,8 @@ void hdc_bind_m4(
     const hdc_word_t_8 *y,
     hdc_word_t_8 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m4(words - i, 8);
-        
-        // Load as vectors
-        vuint8m4_t vx = __riscv_vle8_v_u8m4(&x[i], vl);
-        vuint8m4_t vy = __riscv_vle8_v_u8m4(&y[i], vl);
-
-        // Execute xor
-        vuint8m4_t vz = __riscv_vxor_vv_u8m4(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse8_v_u8m4(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<4, hdc_word_t_8>>(x, y, z, words);
 }
 
 /////////////////////
@@ -735,24 +503,7 @@ void hdc_hamming_m4(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
-    //vuint64m4_t vz = __riscv_vle64_v_u64m4(z, vl); // Need it as a vector
-
-    hdc_bind_m4(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m4(words - i, 64);
-        vuint64m4_t vz = __riscv_vle64_v_u64m4(z, vl); // Need it as a vector    
-        vbool16_t bz = __riscv_vmsne_vx_u64m4_b16(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b16(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<4, hdc_word_t>, hdc_score_t>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m4 (
@@ -763,23 +514,7 @@ void hdc_hamming_m4 (
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_32 *z = (hdc_word_t_32*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m4(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m4(words - i, 32);
-        vuint32m4_t vz = __riscv_vle32_v_u32m4(z, vl); // Need it as a vector    
-        vbool8_t bz = __riscv_vmsne_vx_u32m4_b8(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b8(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<4, hdc_word_t_32>, hdc_score_t_32>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m4(
@@ -790,23 +525,7 @@ void hdc_hamming_m4(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_16 *z = (hdc_word_t_16*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m4(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m4(words - i, 16);
-        vuint16m4_t vz = __riscv_vle16_v_u16m4(z, vl); // Need it as a vector    
-        vbool4_t bz = __riscv_vmsne_vx_u16m4_b4(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b4(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<4, hdc_word_t_16>, hdc_score_t_16>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m4(
@@ -817,23 +536,7 @@ void hdc_hamming_m4(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_8 *z = (hdc_word_t_8*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m4(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m4(words - i, 8);
-        vuint8m4_t vz = __riscv_vle8_v_u8m4(z, vl); // Need it as a vector    
-        vbool2_t bz = __riscv_vmsne_vx_u8m4_b2(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b2(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<4, hdc_word_t_8>, hdc_score_t_8>(x, y, acc, words, alignment, alloc_size);
 }
 
 ///////////////////
@@ -849,12 +552,7 @@ void hdc_query_m4(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m4(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t, hdc_score_t>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m4);
 }
 
 void hdc_query_m4(
@@ -866,12 +564,7 @@ void hdc_query_m4(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m4(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_32, hdc_score_t_32>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m4);
 }
 
 void hdc_query_m4(
@@ -883,12 +576,7 @@ void hdc_query_m4(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m4(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_16, hdc_score_t_16>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m4);
 }
 
 void hdc_query_m4(
@@ -900,12 +588,7 @@ void hdc_query_m4(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m4(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_8, hdc_score_t_8>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m4);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -921,25 +604,8 @@ void hdc_bind_m8(
     const hdc_word_t *y,
     hdc_word_t *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m8(words - i, 64);
-        
-        // Load as vectors
-        vuint64m8_t vx = __riscv_vle64_v_u64m8(&x[i], vl);
-        vuint64m8_t vy = __riscv_vle64_v_u64m8(&y[i], vl);
-
-        // Execute xor
-        vuint64m8_t vz = __riscv_vxor_vv_u64m8(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse64_v_u64m8(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<8, hdc_word_t>>(x, y, z, words);
 }
 
 void hdc_bind_m8(
@@ -947,25 +613,8 @@ void hdc_bind_m8(
     const hdc_word_t_32 *y,
     hdc_word_t_32 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m8(words - i, 32);
-        
-        // Load as vectors
-        vuint32m8_t vx = __riscv_vle32_v_u32m8(&x[i], vl);
-        vuint32m8_t vy = __riscv_vle32_v_u32m8(&y[i], vl);
-
-        // Execute xor
-        vuint32m8_t vz = __riscv_vxor_vv_u32m8(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse32_v_u32m8(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<8, hdc_word_t_32>>(x, y, z, words);
 }
 
 void hdc_bind_m8(
@@ -973,25 +622,8 @@ void hdc_bind_m8(
     const hdc_word_t_16 *y,
     hdc_word_t_16 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m8(words - i, 16);
-        
-        // Load as vectors
-        vuint16m8_t vx = __riscv_vle16_v_u16m8(&x[i], vl);
-        vuint16m8_t vy = __riscv_vle16_v_u16m8(&y[i], vl);
-
-        // Execute xor
-        vuint16m8_t vz = __riscv_vxor_vv_u16m8(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse16_v_u16m8(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<8, hdc_word_t_16>>(x, y, z, words);
 }
 
 void hdc_bind_m8(
@@ -999,25 +631,8 @@ void hdc_bind_m8(
     const hdc_word_t_8 *y,
     hdc_word_t_8 *z,
     size_t words)
-{   
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m8(words - i, 8);
-        
-        // Load as vectors
-        vuint8m8_t vx = __riscv_vle8_v_u8m8(&x[i], vl);
-        vuint8m8_t vy = __riscv_vle8_v_u8m8(&y[i], vl);
-
-        // Execute xor
-        vuint8m8_t vz = __riscv_vxor_vv_u8m8(vx,vy,vl);
-
-        // Save data into z
-        __riscv_vse8_v_u8m8(&z[i], vz, vl);
-
-        // Advance words
-        i += vl;
-    }
+{
+    hdc_bind_impl<RvvOps<8, hdc_word_t_8>>(x, y, z, words);
 }
 
 /////////////////////
@@ -1032,24 +647,7 @@ void hdc_hamming_m8(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t *z = (hdc_word_t*)aligned_alloc(alignment, alloc_size);
-    //vuint64m8_t vz = __riscv_vle64_v_u64m8(z, vl); // Need it as a vector
-
-    hdc_bind_m4(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m8(words - i, 64);
-        vuint64m8_t vz = __riscv_vle64_v_u64m8(z, vl); // Need it as a vector    
-        vbool8_t bz = __riscv_vmsne_vx_u64m8_b8(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b8(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<8, hdc_word_t>, hdc_score_t>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m8(
@@ -1060,23 +658,7 @@ void hdc_hamming_m8(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_32 *z = (hdc_word_t_32*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m8(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m8(words - i, 32);
-        vuint32m8_t vz = __riscv_vle32_v_u32m8(z, vl); // Need it as a vector    
-        vbool4_t bz = __riscv_vmsne_vx_u32m8_b4(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b4(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<8, hdc_word_t_32>, hdc_score_t_32>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m8(
@@ -1087,23 +669,7 @@ void hdc_hamming_m8(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_16 *z = (hdc_word_t_16*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m8(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m8(words - i, 16);
-        vuint16m8_t vz = __riscv_vle16_v_u16m8(z, vl); // Need it as a vector    
-        vbool2_t bz = __riscv_vmsne_vx_u16m8_b2(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b2(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<8, hdc_word_t_16>, hdc_score_t_16>(x, y, acc, words, alignment, alloc_size);
 }
 
 void hdc_hamming_m8(
@@ -1114,23 +680,7 @@ void hdc_hamming_m8(
     size_t alignment, 
     size_t alloc_size)
 {
-    hdc_word_t_8 *z = (hdc_word_t_8*)aligned_alloc(alignment, alloc_size);
-
-    hdc_bind_m8(x,y,z,words); // Perform XOR
-
-    size_t i = 0;
-    while (i < words){
-        // Get VL
-        size_t vl = get_rvv_vl_m8(words - i, 8);
-        vuint8m8_t vz = __riscv_vle8_v_u8m8(z, vl); // Need it as a vector    
-        vbool1_t bz = __riscv_vmsne_vx_u8m8_b1(vz, 0, vl);
-
-        *acc += __riscv_vcpop_m_b1(bz, vl); // pop count
-
-        i += vl;
-    }
-
-    free(z);
+    hdc_hamming_impl<RvvOps<8, hdc_word_t_8>, hdc_score_t_8>(x, y, acc, words, alignment, alloc_size);
 }
 
 ///////////////////
@@ -1146,12 +696,7 @@ void hdc_query_m8(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m8(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t, hdc_score_t>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m8);
 }
 
 void hdc_query_m8(
@@ -1163,12 +708,7 @@ void hdc_query_m8(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m8(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_32, hdc_score_t_32>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m8);
 }
 
 void hdc_query_m8(
@@ -1180,12 +720,7 @@ void hdc_query_m8(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m8(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_16, hdc_score_t_16>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m8);
 }
 
 void hdc_query_m8(
@@ -1197,10 +732,5 @@ void hdc_query_m8(
     size_t alignment, 
     size_t alloc_size)
 {
-    size_t i = 0;
-    while (i < nvec){
-        hdc_hamming_m8(&M[i * words], q, &scores[i], words, alignment, alloc_size);
-        
-        i++;
-    }
+    hdc_query_impl<hdc_word_t_8, hdc_score_t_8>(M, q, scores, nvec, words, alignment, alloc_size, hdc_hamming_m8);
 }
