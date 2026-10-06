@@ -18,6 +18,8 @@ limitations under the License.
 #include "../Microbenchmarks/hammingBenchmark.h"
 #include "../Microbenchmarks/queryBenchmark.h"
 
+#include <cstdio>
+
 using namespace std;
 
 void bindComparation(size_t nvec, size_t words){
@@ -340,8 +342,13 @@ void queryComparation(size_t nvec, size_t words){
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("Usage: %s <nvec> <words>\n", argv[0]);
+    if (argc < 3 || argc > 4 || (argc == 4 && string(argv[3]) != "--debug")) {
+        fprintf(stderr, "Usage: %s <nvec> <words> [--debug]\n", argv[0]);
+        return 1;
+    }
+
+    if (argc == 3 && freopen("/dev/null", "w", stdout) == nullptr) {
+        perror("Unable to silence stdout");
         return 1;
     }
     
