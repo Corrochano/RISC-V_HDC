@@ -17,6 +17,16 @@
 # of `nvec` and `words` (width) parameters.
 
 EXE="./comparation"
+DEBUG_ARGS=()
+
+if [[ $# -gt 1 || ( $# -eq 1 && "$1" != "--debug" ) ]]; then
+  echo "Usage: $0 [--debug]" >&2
+  exit 2
+fi
+
+if [[ $# -eq 1 ]]; then
+  DEBUG_ARGS=(--debug)
+fi
 
 if [[ ! -x "$EXE" ]]; then
   echo "Error: executable $EXE not found or not executable." >&2
@@ -34,14 +44,18 @@ if [[ -n "${WORDS_LIST_ENV:-}" ]]; then
   IFS=',' read -r -a WORDS_LIST <<< "$WORDS_LIST_ENV"
 fi
 
-echo "Running comparation with combinations (nvec x words) ..."
+if [[ ${#DEBUG_ARGS[@]} -gt 0 ]]; then
+  echo "Running comparation with combinations (nvec x words) ..."
+fi
 
 for nvec in "${NVEC_LIST[@]}"; do
   for words in "${WORDS_LIST[@]}"; do
-    "$EXE" "$nvec" "$words" || {
+    "$EXE" "$nvec" "$words" "${DEBUG_ARGS[@]}" || {
       echo "Command failed for nvec=$nvec words=$words" >&2
     }
   done
 done
 
-echo "Finished.""
+if [[ ${#DEBUG_ARGS[@]} -gt 0 ]]; then
+  echo "Finished."
+fi
